@@ -21,7 +21,7 @@ public class PostAPI extends JSON {
 
         System.out.println("Enter Name");
         String postName = scanner.nextLine();
-
+        scanner.nextLine();
 
         if (posts.containsKey(postID)) {
             System.out.println("Invalid id");

@@ -34,7 +34,7 @@ public class EmployeeAPI extends PostAPI {
         System.out.println("Enter postID");
         int postID = scanner.nextInt();
         scanner.nextLine();
-        
+
         Post post = posts.get(postID);
         int positionId = post.getId();
         if (post == null) {
@@ -195,7 +195,12 @@ public class EmployeeAPI extends PostAPI {
     }
 
     private static void searchEmployeesByPost(List<Employee> employees) {
-        System.out.println("Enter position name(examples: dev, qa, ceo)");
+        // Получаем список всех уникальных должностей
+        Set<String> positions = posts.values().stream()
+                .map(Post::getPostName)
+                .collect(Collectors.toSet());
+        System.out.println("Enter position name");
+        System.out.println("Examples: " + String.join(", ", positions));
         String postToFind = scanner.next();
         List<Employee> foundEmployees = employees.stream()
                 .filter(employee -> employee.getPosition().getPostName()
