@@ -12,10 +12,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.example.Main.posts;
+import static org.example.menu.EmployeeMenu.menuEmployee;
 
 public class EmployeeAPI extends PostAPI {
 
-static EmployeeMenu employeeMenu = new EmployeeMenu();
     //Создание сотрудника
     public static void createEmployee(List<Employee> employees) {
 
@@ -93,17 +93,22 @@ static EmployeeMenu employeeMenu = new EmployeeMenu();
     public static void terminateEmployee(List<Employee> employees) {
         System.out.println("Enter ID");
         int id = scanner.nextInt();
-        try {
-            Employee employee = employees.get(id);
+        scanner.nextLine();
+
+        Employee employee = employees.stream()
+                .filter(e -> e.getId() == id)
+                .findFirst()
+                .orElse(null);
+
+        if (employee == null) {
+            System.out.println("Employee with the given ID was not found.");
+        } else {
             employee.setTerminated(true);
             employee.setModificationDate(LocalDate.now());
-            String json = JSON.gson.toJson(employee);
-            System.out.println(json);
-        } catch (IndexOutOfBoundsException e) {
-            System.out.println("Employee with the given ID was not found.");
-        } catch (InputMismatchException e) {
-            System.out.println("Invalid input. Please enter a valid ID number.");
+
+            System.out.println("Employee terminated successfully: ");
         }
+
     }
 
     //Вывести всех сотрудников отсортированных по Фамилии
@@ -124,7 +129,6 @@ static EmployeeMenu employeeMenu = new EmployeeMenu();
                 employeeJson.addProperty("modificationDate", employee.getModificationDate().toString());
                 employeeJson.addProperty("isTerminated", employee.getTerminated());
 
-// Получение объекта Post по positionId и добавление информации о должности
                 Post post = posts.get(employee.getPositionId());
                 JsonObject postJson = new JsonObject();
                 if (post != null) {
@@ -201,17 +205,17 @@ static EmployeeMenu employeeMenu = new EmployeeMenu();
                 searchEmployeesByDate(employees);
                 break;
             case 3:
-                searchEmployeesByPost(employees,posts);
+                searchEmployeesByPost(employees, posts);
                 break;
             case 4:
-                employeeMenu.menuEmployee(employees, posts);
+                menuEmployee(employees, posts);
                 break;
             default:
                 System.out.println("Invalid action");
         }
     }
+
     private static void searchEmployeesByPost(List<Employee> employees, Map<Integer, Post> posts) {
-// Получаем список всех уникальных должностей
         Set<String> positions = posts.values().stream()
                 .map(Post::getPostName)
                 .collect(Collectors.toSet());

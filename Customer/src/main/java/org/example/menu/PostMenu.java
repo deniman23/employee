@@ -6,7 +6,6 @@ import org.example.entity.Post;
 
 import java.util.*;
 
-import static org.example.api.PostAPI.*;
 import static org.example.menu.EmployeeMenu.menuEmployee;
 
 public class PostMenu extends PostAPI{
@@ -61,10 +60,10 @@ public class PostMenu extends PostAPI{
                 }
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input. Please enter a number.");
-                scanner.nextLine(); // Очистка сканера
+                scanner.nextLine();
             } catch (Exception e) {
                 System.out.println("An error occurred: " + e.getMessage());
-                scanner.nextLine(); // Очистка сканера
+                scanner.nextLine();
             }
         }
     }

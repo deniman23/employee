@@ -9,8 +9,8 @@ import java.util.*;
 
 import static org.example.Main.posts;
 
-public class PostAPI extends JSON {
 
+public class PostAPI extends JSON {
 
     //Создание должности
     public static void createPost() {

@@ -9,7 +9,7 @@ import java.util.UUID;
 //класс сотрудника
 public class Employee {
     Random random = new Random();
-    private final int id = random.nextInt();
+    private int id = random.nextInt();
     private final LocalDate creationDate;
     private LocalDate modificationDate;
     private String lastName;

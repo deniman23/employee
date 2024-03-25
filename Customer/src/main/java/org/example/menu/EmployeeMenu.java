@@ -7,12 +7,11 @@ import org.example.entity.Post;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 import static org.example.menu.PostMenu.menuPost;
 
 public class EmployeeMenu extends EmployeeAPI {
-    PostMenu postMenu = new PostMenu();
+
 
     public static void menuEmployee(List<Employee> employees, Map<Integer, Post> posts) {
         boolean isRunning = true;
@@ -39,16 +38,16 @@ public class EmployeeMenu extends EmployeeAPI {
                         createEmployee(employees);
                         break;
                     case 2:
-                        changeEmployee(employees,posts);
+                        changeEmployee(employees, posts);
                         break;
                     case 3:
                         terminateEmployee(employees);
                         break;
                     case 4:
-                        outputAllEmployeesSortedByLastName(employees,posts);
+                        outputAllEmployeesSortedByLastName(employees, posts);
                         break;
                     case 5:
-                        outputEmployee(employees,posts);
+                        outputEmployee(employees, posts);
                         break;
                     case 6:
                         outputEmployeesByFilter(employees);
@@ -62,10 +61,10 @@ public class EmployeeMenu extends EmployeeAPI {
                 }
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input. Please enter a number.");
-                scanner.nextLine(); // Очистка сканера
+                scanner.nextLine();
             } catch (Exception e) {
                 System.out.println("An error occurred: " + e.getMessage());
-                scanner.nextLine(); // Очистка сканера
+                scanner.nextLine();
             }
         }
     }
