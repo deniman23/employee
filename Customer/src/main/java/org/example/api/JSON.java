@@ -6,8 +6,10 @@ import org.example.entity.Post;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.Scanner;
 
 public class JSON implements JsonSerializer<LocalDate>, JsonDeserializer<LocalDate> {
+    public static Scanner scanner = new Scanner(System.in);
     static Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDate.class, new JSON())
             .setPrettyPrinting()
@@ -35,7 +37,7 @@ public class JSON implements JsonSerializer<LocalDate>, JsonDeserializer<LocalDa
                 System.out.println("Post with given ID does not exist.");
             }
         } else {
-            map.put(id, new Post(postName));
+            map.put(id, new Post(id, postName));
             System.out.println("Post created successfully.");
         }
     }
@@ -50,4 +52,5 @@ public class JSON implements JsonSerializer<LocalDate>, JsonDeserializer<LocalDa
             throws JsonParseException {
         return LocalDate.parse(json.getAsString());
     }
+
 }

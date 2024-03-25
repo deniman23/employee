@@ -1,24 +1,21 @@
 package org.example.api;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.example.entity.Employee;
 import org.example.entity.Post;
+import org.example.menu.EmployeeMenu;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.example.Main.employees;
-import static org.example.menu.EmployeeMenu.menuEmployee;
-import static org.example.menu.PostMenu.posts;
+import static org.example.Main.posts;
 
 public class EmployeeAPI extends PostAPI {
-//    private static final Map<String, Employee> employees = new HashMap<>();
 
-
+static EmployeeMenu employeeMenu = new EmployeeMenu();
     //Создание сотрудника
     public static void createEmployee(List<Employee> employees) {
 
@@ -46,13 +43,13 @@ public class EmployeeAPI extends PostAPI {
     }
 
     //Изменение сотрудника
-    public static void changeEmployee() {
-        Scanner scanner = new Scanner(System.in);
+    public static void changeEmployee(List<Employee> employees, Map<Integer, Post> posts) {
         System.out.println("Enter ID");
         int id = scanner.nextInt();
+        scanner.nextLine();
 
         Employee employee = employees.stream()
-                .filter(e -> e.equals(id))
+                .filter(e -> e.getId() == id)
                 .findFirst()
                 .orElse(null);
 
@@ -72,10 +69,12 @@ public class EmployeeAPI extends PostAPI {
 
         System.out.println("Enter postID");
         int postID = scanner.nextInt();
+        scanner.nextLine(); // Считываем оставшийся символ новой строки
 
         Post newPosition = posts.get(postID);
         if (newPosition != null) {
             employee.setPosition(newPosition);
+            employee.setPositionId(postID);
         } else {
             System.out.println("Post not found");
             return;
@@ -125,17 +124,17 @@ public class EmployeeAPI extends PostAPI {
                 employeeJson.addProperty("modificationDate", employee.getModificationDate().toString());
                 employeeJson.addProperty("isTerminated", employee.getTerminated());
 
-                // Получение объекта Post по positionId и добавление информации о должности
+// Получение объекта Post по positionId и добавление информации о должности
                 Post post = posts.get(employee.getPositionId());
+                JsonObject postJson = new JsonObject();
                 if (post != null) {
-                    JsonObject postJson = new JsonObject();
                     postJson.addProperty("id", post.getId());
-                    postJson.addProperty("name", post.getPostName());
-
-                    employeeJson.addProperty("position", post.getPostName());
+                    postJson.addProperty("postName", post.getPostName());
                 } else {
-                    employeeJson.addProperty("position", "Position not found");
+                    postJson.addProperty("id", "Not found");
+                    postJson.addProperty("postName", "Not found");
                 }
+                employeeJson.add("post", postJson);
 
                 employeesJsonArray.add(employeeJson);
             }
@@ -146,26 +145,41 @@ public class EmployeeAPI extends PostAPI {
     }
 
 
-    //Вывод одного сотрудника по id
-    public static void outputEmployee(List<Employee> employees) {
+    public static void outputEmployee(List<Employee> employees, Map<Integer, Post> posts) {
         System.out.println("Enter ID");
-        int id = scanner.nextInt(); // Это может вызвать InputMismatchException, если введено не число
-        scanner.nextLine(); // Считываем оставшийся символ новой строки
+        int id = scanner.nextInt();
+        scanner.nextLine();
 
-        Employee employer = employees.stream()
+        Employee employee = employees.stream()
                 .filter(e -> e.getId() == id)
                 .findFirst()
                 .orElse(null);
 
-        if (employer == null) {
+        if (employee == null) {
             System.out.println("Employee with the given ID was not found.");
         } else {
-// Вывод информации о сотруднике...
-            Employee employee = new Employee(employees.get(id));
-            int positionId = employee.getPositionId();
-            Post post = posts.get(positionId);
-            employee.setPosition(post);
-            String json = JSON.gson.toJson(employee);
+            JsonObject employeeJson = new JsonObject();
+            employeeJson.addProperty("id", employee.getId());
+            employeeJson.addProperty("lastName", employee.getLastName());
+            employeeJson.addProperty("firstName", employee.getFirstName());
+            employeeJson.addProperty("middleName", employee.getMiddleName());
+            employeeJson.addProperty("creationDate", employee.getCreationDate().toString());
+            employeeJson.addProperty("modificationDate", employee.getModificationDate().toString());
+            employeeJson.addProperty("isTerminated", employee.getTerminated());
+
+// Получение объекта Post по positionId и добавление информации о должности
+            Post post = posts.get(employee.getPositionId());
+            JsonObject postJson = new JsonObject();
+            if (post != null) {
+                postJson.addProperty("id", post.getId());
+                postJson.addProperty("postName", post.getPostName());
+            } else {
+                postJson.addProperty("id", "Not found");
+                postJson.addProperty("postName", "Not found");
+            }
+            employeeJson.add("post", postJson);
+
+            String json = JSON.gson.toJson(employeeJson);
             System.out.println(json);
         }
     }
@@ -187,18 +201,17 @@ public class EmployeeAPI extends PostAPI {
                 searchEmployeesByDate(employees);
                 break;
             case 3:
-                searchEmployeesByPost(employees);
+                searchEmployeesByPost(employees,posts);
                 break;
             case 4:
-                menuEmployee(employees, posts);
+                employeeMenu.menuEmployee(employees, posts);
                 break;
             default:
                 System.out.println("Invalid action");
         }
     }
-
-    private static void searchEmployeesByPost(List<Employee> employees) {
-        // Получаем список всех уникальных должностей
+    private static void searchEmployeesByPost(List<Employee> employees, Map<Integer, Post> posts) {
+// Получаем список всех уникальных должностей
         Set<String> positions = posts.values().stream()
                 .map(Post::getPostName)
                 .collect(Collectors.toSet());
@@ -206,8 +219,11 @@ public class EmployeeAPI extends PostAPI {
         System.out.println("Examples: " + String.join(", ", positions));
         String postToFind = scanner.next();
         List<Employee> foundEmployees = employees.stream()
-                .filter(employee -> employee.getPosition().getPostName()
-                        .equals(postToFind.toLowerCase())).collect(Collectors.toList());
+                .filter(employee -> {
+                    Post position = employee.getPosition();
+                    return position != null && position.getPostName().equalsIgnoreCase(postToFind);
+                })
+                .collect(Collectors.toList());
         String json = gson.toJson(foundEmployees);
         System.out.println(json);
     }

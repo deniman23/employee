@@ -1,14 +1,15 @@
 package org.example.menu;
 
+import org.example.api.PostAPI;
 import org.example.entity.Employee;
 import org.example.entity.Post;
 
 import java.util.*;
 
 import static org.example.api.PostAPI.*;
+import static org.example.menu.EmployeeMenu.menuEmployee;
 
-public class PostMenu {
-    public static Map<Integer, Post> posts = new HashMap<>();
+public class PostMenu extends PostAPI{
 
 
     public static void menuPost(Map<Integer, Post> posts, List<Employee> employees) {
@@ -31,7 +32,7 @@ public class PostMenu {
 
                 switch (operator) {
                     case 0:
-                        EmployeeMenu.menuEmployee(employees, posts);
+                        menuEmployee(employees, posts);
                         break;
                     case 1:
                         createPost();

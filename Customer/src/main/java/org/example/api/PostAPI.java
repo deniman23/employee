@@ -7,15 +7,14 @@ import org.example.entity.Post;
 
 import java.util.*;
 
-import static org.example.menu.PostMenu.posts;
+import static org.example.Main.posts;
 
 public class PostAPI extends JSON {
-    public static Scanner scanner = new Scanner(System.in);
-    static Random random = new Random();
+
 
     //Создание должности
     public static void createPost() {
-        int postID= random.nextInt();
+        int postID = posts.size() + 1;
         System.out.println("Enter Name");
         String postName = scanner.nextLine();
 
@@ -27,11 +26,9 @@ public class PostAPI extends JSON {
             System.out.println("Invalid name");
 
         } else {
-            posts.put(postID, new Post(postName.toLowerCase()));
+            posts.put(postID, new Post(postID, postName.toLowerCase()));
             System.out.println("Success, id: " + postID);
         }
-
-
     }
 
     //Изменение должности вводить в формате json
@@ -48,7 +45,9 @@ public class PostAPI extends JSON {
     public static void deletePost(Map<Integer, Post> map) {
         outputAllPosts(posts);
         System.out.println("Enter ID");
-        String id = scanner.nextLine();
+        int id = scanner.nextInt();
+
+
         if (map.containsKey(id)) {
             map.remove(id);
             System.out.println("Success");
@@ -58,19 +57,28 @@ public class PostAPI extends JSON {
 
     //Вывод всех должностей с индексом
     public static void outputAllPosts(Map<Integer, Post> posts) {
-        posts.values().forEach(post -> System.out.println("{\"id\": " + post.getId() +
-                ", \"postName\": " + post.getPostName() + "}"));
+        if (!posts.isEmpty()) {
+            posts.values().forEach(post -> System.out.println("{\"id\": " + post.getId() +
+                    ", \"postName\": " + post.getPostName() + "}"));
+        } else {
+            System.out.println("Empty");
+        }
 
     }
 
     //Вывод одной должности
     public static void outputPost(Map<Integer, Post> map) {
         System.out.println("Enter ID");
-        String id = scanner.nextLine();
-        map.values().stream()
-                .filter(post -> post.equals(id))
-                .forEach(post -> System.out.println("{\"id\": " + post.getId() +
-                        ", \"postName\": " + post.getPostName() + "}"));
+        int id = scanner.nextInt();
+        scanner.nextLine(); // Считываем оставшийся символ новой строки
+
+        if (map.containsKey(id)) {
+            Post post = map.get(id);
+            System.out.println("{\"id\": " + post.getId() +
+                    ", \"postName\": \"" + post.getPostName() + "\"}");
+        } else {
+            System.out.println("Not found");
+        }
     }
 
     //Вывод должностей с фамилиями сотрудников

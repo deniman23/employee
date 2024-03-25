@@ -9,10 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import static org.example.menu.PostMenu.menuPost;
+
 public class EmployeeMenu extends EmployeeAPI {
+    PostMenu postMenu = new PostMenu();
 
     public static void menuEmployee(List<Employee> employees, Map<Integer, Post> posts) {
-        Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
         while (isRunning) {
             try {
@@ -27,17 +29,17 @@ public class EmployeeMenu extends EmployeeAPI {
                 System.out.println("7. Exit");
 
                 int operator = scanner.nextInt();
-                scanner.nextLine(); // Reading newline character
+                scanner.nextLine();
 
                 switch (operator) {
                     case 0:
-                        PostMenu.menuPost(posts, employees); // Assuming PostMenu has a similar static method 'menu'
+                        menuPost(posts, employees);
                         break;
                     case 1:
                         createEmployee(employees);
                         break;
                     case 2:
-                        changeEmployee();
+                        changeEmployee(employees,posts);
                         break;
                     case 3:
                         terminateEmployee(employees);
@@ -46,7 +48,7 @@ public class EmployeeMenu extends EmployeeAPI {
                         outputAllEmployeesSortedByLastName(employees,posts);
                         break;
                     case 5:
-                        outputEmployee(employees);
+                        outputEmployee(employees,posts);
                         break;
                     case 6:
                         outputEmployeesByFilter(employees);

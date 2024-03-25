@@ -44,7 +44,7 @@ public class Employee {
     }
 
     public int getPositionId() {
-        return position.getId();
+        return positionId;
     }
 
     public LocalDate getModificationDate() {
