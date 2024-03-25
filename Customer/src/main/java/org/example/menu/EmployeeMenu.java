@@ -34,7 +34,7 @@ public class EmployeeMenu extends EmployeeAPI {
                         PostMenu.menuPost(posts, employees); // Assuming PostMenu has a similar static method 'menu'
                         break;
                     case 1:
-                        createEmployee();
+                        createEmployee(employees);
                         break;
                     case 2:
                         changeEmployee();

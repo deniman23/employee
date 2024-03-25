@@ -3,11 +3,13 @@ package org.example.entity;
 import com.google.gson.Gson;
 
 import java.time.LocalDate;
+import java.util.Random;
 import java.util.UUID;
 
 //класс сотрудника
 public class Employee {
-    private final String id = UUID.randomUUID().toString();
+    Random random = new Random();
+    private final int id = random.nextInt();
     private final LocalDate creationDate;
     private LocalDate modificationDate;
     private String lastName;
@@ -42,7 +44,7 @@ public class Employee {
     }
 
     public int getPositionId() {
-        return positionId;
+        return position.getId();
     }
 
     public LocalDate getModificationDate() {
@@ -66,7 +68,7 @@ public class Employee {
         this.firstName = firstName;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 

@@ -11,27 +11,24 @@ import static org.example.menu.PostMenu.posts;
 
 public class PostAPI extends JSON {
     public static Scanner scanner = new Scanner(System.in);
-
+    static Random random = new Random();
 
     //Создание должности
     public static void createPost() {
-
-        System.out.println("Enter ID");
-        int postID = scanner.nextInt();
-
+        int postID= random.nextInt();
         System.out.println("Enter Name");
         String postName = scanner.nextLine();
-        scanner.nextLine();
+
 
         if (posts.containsKey(postID)) {
             System.out.println("Invalid id");
-            createPost();
+
         } else if (posts.values().stream().anyMatch(post -> post.getPostName().equalsIgnoreCase(postName))) {
             System.out.println("Invalid name");
-            createPost();
+
         } else {
-            posts.put(postID, new Post(postID, postName.toLowerCase()));
-            System.out.println("Success");
+            posts.put(postID, new Post(postName.toLowerCase()));
+            System.out.println("Success, id: " + postID);
         }
 
 

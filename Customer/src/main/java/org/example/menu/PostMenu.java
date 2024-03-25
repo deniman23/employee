@@ -11,7 +11,6 @@ public class PostMenu {
     public static Map<Integer, Post> posts = new HashMap<>();
 
 
-
     public static void menuPost(Map<Integer, Post> posts, List<Employee> employees) {
 
         boolean isRunning = true;

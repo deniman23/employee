@@ -18,9 +18,9 @@ import static org.example.menu.PostMenu.posts;
 public class EmployeeAPI extends PostAPI {
 //    private static final Map<String, Employee> employees = new HashMap<>();
 
+
     //Создание сотрудника
-    public static void createEmployee() {
-        String id = UUID.randomUUID().toString();
+    public static void createEmployee(List<Employee> employees) {
 
         System.out.println("Enter lastName");
         String lastName = scanner.nextLine();
@@ -33,28 +33,26 @@ public class EmployeeAPI extends PostAPI {
 
         System.out.println("Enter postID");
         int postID = scanner.nextInt();
-        scanner.nextLine();
+        scanner.nextLine(); // Считываем оставшийся символ новой строки
 
         Post post = posts.get(postID);
-        int positionId = post.getId();
         if (post == null) {
             System.out.println("Post not found");
         } else {
-            Employee newEmployee = new Employee(lastName, firstName, middleName, positionId);
+            Employee newEmployee = new Employee(lastName, firstName, middleName, postID);
             employees.add(newEmployee);
-            System.out.println("Success, id: " + id);
+            System.out.println("Success, id: " + newEmployee.getId());
         }
-
     }
 
     //Изменение сотрудника
     public static void changeEmployee() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter ID");
-        String id = scanner.nextLine();
+        int id = scanner.nextInt();
 
         Employee employee = employees.stream()
-                .filter(e -> e.getId().equals(id))
+                .filter(e -> e.equals(id))
                 .findFirst()
                 .orElse(null);
 
@@ -104,10 +102,8 @@ public class EmployeeAPI extends PostAPI {
             System.out.println(json);
         } catch (IndexOutOfBoundsException e) {
             System.out.println("Employee with the given ID was not found.");
-            outputEmployee(employees);
         } catch (InputMismatchException e) {
             System.out.println("Invalid input. Please enter a valid ID number.");
-            outputEmployee(employees);
         }
     }
 
@@ -132,6 +128,10 @@ public class EmployeeAPI extends PostAPI {
                 // Получение объекта Post по positionId и добавление информации о должности
                 Post post = posts.get(employee.getPositionId());
                 if (post != null) {
+                    JsonObject postJson = new JsonObject();
+                    postJson.addProperty("id", post.getId());
+                    postJson.addProperty("name", post.getPostName());
+
                     employeeJson.addProperty("position", post.getPostName());
                 } else {
                     employeeJson.addProperty("position", "Position not found");
@@ -150,20 +150,23 @@ public class EmployeeAPI extends PostAPI {
     public static void outputEmployee(List<Employee> employees) {
         System.out.println("Enter ID");
         int id = scanner.nextInt(); // Это может вызвать InputMismatchException, если введено не число
+        scanner.nextLine(); // Считываем оставшийся символ новой строки
 
-        try {
+        Employee employer = employees.stream()
+                .filter(e -> e.getId() == id)
+                .findFirst()
+                .orElse(null);
+
+        if (employer == null) {
+            System.out.println("Employee with the given ID was not found.");
+        } else {
+// Вывод информации о сотруднике...
             Employee employee = new Employee(employees.get(id));
             int positionId = employee.getPositionId();
             Post post = posts.get(positionId);
             employee.setPosition(post);
             String json = JSON.gson.toJson(employee);
             System.out.println(json);
-        } catch (IndexOutOfBoundsException e) {
-            System.out.println("Employee with the given ID was not found.");
-            outputEmployee(employees);
-        } catch (InputMismatchException e) {
-            System.out.println("Invalid input. Please enter a valid ID number.");
-            outputEmployee(employees);
         }
     }
 

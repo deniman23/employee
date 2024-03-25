@@ -35,7 +35,7 @@ public class JSON implements JsonSerializer<LocalDate>, JsonDeserializer<LocalDa
                 System.out.println("Post with given ID does not exist.");
             }
         } else {
-            map.put(id, new Post(id, postName));
+            map.put(id, new Post(postName));
             System.out.println("Post created successfully.");
         }
     }

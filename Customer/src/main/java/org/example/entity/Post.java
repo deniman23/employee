@@ -2,14 +2,16 @@ package org.example.entity;
 
 import com.google.gson.Gson;
 
+import java.util.Random;
+
 //класс должности
 public class Post {
-    private int id;
+    Random random = new Random();
+    private final int id = random.nextInt();
     private String postName;
 
 
-    public Post(int id, String postName) {
-        this.id = id;
+    public Post(String postName) {
         this.postName = postName;
     }
 
