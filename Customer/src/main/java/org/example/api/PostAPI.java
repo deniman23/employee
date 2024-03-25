@@ -7,17 +7,19 @@ import org.example.entity.Post;
 
 import java.util.*;
 
-import static org.example.Main.posts;
-
 
 public class PostAPI extends JSON {
+    private Map<Integer, Post> posts;
+
+    public PostAPI(Map<Integer, Post> posts) {
+        this.posts = posts;
+    }
 
     //Создание должности
-    public static void createPost() {
+    public void createPost() {
         int postID = posts.size() + 1;
         System.out.println("Enter Name");
         String postName = scanner.nextLine();
-
 
         if (posts.containsKey(postID)) {
             System.out.println("Invalid id");
@@ -32,7 +34,7 @@ public class PostAPI extends JSON {
     }
 
     //Изменение должности вводить в формате json
-    public static void changePost(Map<Integer, Post> map) {
+    public void changePost(Map<Integer, Post> map) {
         System.out.println("Enter json for existing post:");
         String data = scanner.nextLine();
         JsonObject jsonData = parseJson(data, gson);
@@ -42,7 +44,7 @@ public class PostAPI extends JSON {
     }
 
     //Удаление должности по ID
-    public static void deletePost(Map<Integer, Post> map) {
+    public void deletePost(Map<Integer, Post> map) {
         outputAllPosts(posts);
         System.out.println("Enter ID");
         int id = scanner.nextInt();
@@ -56,7 +58,7 @@ public class PostAPI extends JSON {
     }
 
     //Вывод всех должностей с индексом
-    public static void outputAllPosts(Map<Integer, Post> posts) {
+    public void outputAllPosts(Map<Integer, Post> posts) {
         if (!posts.isEmpty()) {
             posts.values().forEach(post -> System.out.println("{\"id\": " + post.getId() +
                     ", \"postName\": " + post.getPostName() + "}"));
@@ -67,10 +69,10 @@ public class PostAPI extends JSON {
     }
 
     //Вывод одной должности
-    public static void outputPost(Map<Integer, Post> map) {
+    public void outputPost(Map<Integer, Post> map) {
         System.out.println("Enter ID");
         int id = scanner.nextInt();
-        scanner.nextLine(); // Считываем оставшийся символ новой строки
+        scanner.nextLine();
 
         if (map.containsKey(id)) {
             Post post = map.get(id);
@@ -82,11 +84,11 @@ public class PostAPI extends JSON {
     }
 
     //Вывод должностей с фамилиями сотрудников
-    public static void outputPostsWithEmployees(Map<Integer, Post> posts, List<Employee> employees) {
+    public void outputPostsWithEmployees(Map<Integer, Post> posts, List<Employee> employees) {
         for (Map.Entry<Integer, Post> postEntry : posts.entrySet()) {
             JsonObject postObject = new JsonObject();
             postObject.addProperty("PostName", postEntry.getValue().getPostName());
-            // Фильтруем и сортируем сотрудников по фамилии, принадлежащих к текущей должности
+
             JsonArray employeesLastNamesArray = new JsonArray();
             employees.stream()
                     .filter(employee -> employee.getPositionId() == postEntry.getKey())
@@ -95,7 +97,6 @@ public class PostAPI extends JSON {
 
             postObject.add("EmployeesLastNames", employeesLastNamesArray);
 
-            // Выводим информацию о каждой должности в отдельной строке
             System.out.println(gson.toJson(postObject));
         }
     }

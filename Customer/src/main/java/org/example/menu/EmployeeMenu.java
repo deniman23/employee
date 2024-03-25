@@ -1,6 +1,8 @@
 package org.example.menu;
 
+import org.example.Main;
 import org.example.api.EmployeeAPI;
+import org.example.api.PostAPI;
 import org.example.entity.Employee;
 import org.example.entity.Post;
 
@@ -8,12 +10,24 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
 
-import static org.example.menu.PostMenu.menuPost;
+import static org.example.api.EmployeeAPI.*;
+import static org.example.api.JSON.scanner;
 
-public class EmployeeMenu extends EmployeeAPI {
 
+public class EmployeeMenu{
+    private EmployeeAPI employeeAPI;
+    private PostMenu postMenu;
 
-    public static void menuEmployee(List<Employee> employees, Map<Integer, Post> posts) {
+    public EmployeeMenu(EmployeeAPI employeeAPI, PostMenu postMenu) {
+        this.employeeAPI = employeeAPI;
+        this.postMenu = postMenu;
+    }
+
+    public void setPostMenu(PostMenu postMenu) {
+        this.postMenu = postMenu;
+    }
+
+    public void menuEmployee(List<Employee> employees, Map<Integer, Post> posts) {
         boolean isRunning = true;
         while (isRunning) {
             try {
@@ -32,25 +46,25 @@ public class EmployeeMenu extends EmployeeAPI {
 
                 switch (operator) {
                     case 0:
-                        menuPost(posts, employees);
+                        postMenu.menuPost(posts, employees);
                         break;
                     case 1:
-                        createEmployee(employees);
+                        employeeAPI.createEmployee(employees);
                         break;
                     case 2:
-                        changeEmployee(employees, posts);
+                        employeeAPI.changeEmployee(employees, posts);
                         break;
                     case 3:
-                        terminateEmployee(employees);
+                        employeeAPI.terminateEmployee(employees);
                         break;
                     case 4:
-                        outputAllEmployeesSortedByLastName(employees, posts);
+                        employeeAPI.outputAllEmployeesSortedByLastName(employees, posts);
                         break;
                     case 5:
-                        outputEmployee(employees, posts);
+                        employeeAPI.outputEmployee(employees, posts);
                         break;
                     case 6:
-                        outputEmployeesByFilter(employees);
+                        employeeAPI.outputEmployeesByFilter(employees);
                         break;
                     case 7:
                         isRunning = false;

@@ -11,13 +11,27 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.example.Main.posts;
-import static org.example.menu.EmployeeMenu.menuEmployee;
 
-public class EmployeeAPI extends PostAPI {
+import static org.example.api.JSON.gson;
+import static org.example.api.JSON.scanner;
+
+public class EmployeeAPI {
+    private Map<Integer, Post> posts;
+    private List<Employee> employees;
+    private EmployeeMenu employeeMenu;
+
+    public EmployeeAPI(Map<Integer, Post> posts, List<Employee> employees) {
+        this.posts = posts;
+        this.employees = employees;
+
+    }
+
+    public EmployeeAPI(EmployeeMenu employeeMenu) {
+        this.employeeMenu = employeeMenu;
+    }
 
     //Создание сотрудника
-    public static void createEmployee(List<Employee> employees) {
+    public void createEmployee(List<Employee> employees) {
 
         System.out.println("Enter lastName");
         String lastName = scanner.nextLine();
@@ -30,7 +44,7 @@ public class EmployeeAPI extends PostAPI {
 
         System.out.println("Enter postID");
         int postID = scanner.nextInt();
-        scanner.nextLine(); // Считываем оставшийся символ новой строки
+        scanner.nextLine();
 
         Post post = posts.get(postID);
         if (post == null) {
@@ -43,7 +57,7 @@ public class EmployeeAPI extends PostAPI {
     }
 
     //Изменение сотрудника
-    public static void changeEmployee(List<Employee> employees, Map<Integer, Post> posts) {
+    public void changeEmployee(List<Employee> employees, Map<Integer, Post> posts) {
         System.out.println("Enter ID");
         int id = scanner.nextInt();
         scanner.nextLine();
@@ -69,7 +83,7 @@ public class EmployeeAPI extends PostAPI {
 
         System.out.println("Enter postID");
         int postID = scanner.nextInt();
-        scanner.nextLine(); // Считываем оставшийся символ новой строки
+        scanner.nextLine();
 
         Post newPosition = posts.get(postID);
         if (newPosition != null) {
@@ -90,7 +104,7 @@ public class EmployeeAPI extends PostAPI {
 
 
     // Увольнение сотрудника
-    public static void terminateEmployee(List<Employee> employees) {
+    public void terminateEmployee(List<Employee> employees) {
         System.out.println("Enter ID");
         int id = scanner.nextInt();
         scanner.nextLine();
@@ -112,7 +126,7 @@ public class EmployeeAPI extends PostAPI {
     }
 
     //Вывести всех сотрудников отсортированных по Фамилии
-    public static void outputAllEmployeesSortedByLastName(List<Employee> employees, Map<Integer, Post> posts) {
+    public void outputAllEmployeesSortedByLastName(List<Employee> employees, Map<Integer, Post> posts) {
         if (employees.isEmpty()) {
             System.out.println("Empty");
         } else {
@@ -143,13 +157,13 @@ public class EmployeeAPI extends PostAPI {
                 employeesJsonArray.add(employeeJson);
             }
 
-            String json = JSON.gson.toJson(employeesJsonArray);
+            String json = gson.toJson(employeesJsonArray);
             System.out.println(json);
         }
     }
 
 
-    public static void outputEmployee(List<Employee> employees, Map<Integer, Post> posts) {
+    public void outputEmployee(List<Employee> employees, Map<Integer, Post> posts) {
         System.out.println("Enter ID");
         int id = scanner.nextInt();
         scanner.nextLine();
@@ -171,7 +185,7 @@ public class EmployeeAPI extends PostAPI {
             employeeJson.addProperty("modificationDate", employee.getModificationDate().toString());
             employeeJson.addProperty("isTerminated", employee.getTerminated());
 
-// Получение объекта Post по positionId и добавление информации о должности
+            // Получение объекта Post по positionId и добавление информации о должности
             Post post = posts.get(employee.getPositionId());
             JsonObject postJson = new JsonObject();
             if (post != null) {
@@ -183,13 +197,13 @@ public class EmployeeAPI extends PostAPI {
             }
             employeeJson.add("post", postJson);
 
-            String json = JSON.gson.toJson(employeeJson);
+            String json = gson.toJson(employeeJson);
             System.out.println(json);
         }
     }
 
     //Вывод сотрудника по фильтру
-    public static void outputEmployeesByFilter(List<Employee> employees) {
+    public void outputEmployeesByFilter(List<Employee> employees) {
         System.out.println("Choose filter: ");
         System.out.println("1. Search by Last Name, First Name, Middle Name (by partial coincidence)");
         System.out.println("2. Search by creation date");
@@ -208,32 +222,39 @@ public class EmployeeAPI extends PostAPI {
                 searchEmployeesByPost(employees, posts);
                 break;
             case 4:
-                menuEmployee(employees, posts);
+                employeeMenu.menuEmployee(employees, posts);
                 break;
             default:
                 System.out.println("Invalid action");
         }
     }
 
-    private static void searchEmployeesByPost(List<Employee> employees, Map<Integer, Post> posts) {
+    private void searchEmployeesByPost(List<Employee> employees, Map<Integer, Post> posts) {
         Set<String> positions = posts.values().stream()
                 .map(Post::getPostName)
                 .collect(Collectors.toSet());
-        System.out.println("Enter position name");
+        System.out.println("Enter position name:");
         System.out.println("Examples: " + String.join(", ", positions));
-        String postToFind = scanner.next();
+        scanner.nextLine();
+        String postToFind = scanner.nextLine();
         List<Employee> foundEmployees = employees.stream()
                 .filter(employee -> {
-                    Post position = employee.getPosition();
+                    Post position = posts.get(employee.getPositionId());
                     return position != null && position.getPostName().equalsIgnoreCase(postToFind);
                 })
                 .collect(Collectors.toList());
-        String json = gson.toJson(foundEmployees);
-        System.out.println(json);
+
+
+        if (foundEmployees.isEmpty()) {
+            System.out.println("No employees found for the given position.");
+        } else {
+            String json = gson.toJson(foundEmployees);
+            System.out.println(json);
+        }
     }
 
     //Поиск по фамилии, имени или отчеству
-    private static void searchEmployeesByPartialMatch(List<Employee> employees) {
+    private void searchEmployeesByPartialMatch(List<Employee> employees) {
         System.out.println("Enter the first name, last name or middle name by which you want to find");
         String search = scanner.next();
         List<Employee> foundEmployees = employees.stream()
@@ -242,12 +263,12 @@ public class EmployeeAPI extends PostAPI {
                         e.getMiddleName().toLowerCase().contains(search.toLowerCase()))
                 .collect(Collectors.toList());
 
-        String json = gson.toJson(foundEmployees);
+        String json = JSON.gson.toJson(foundEmployees);
         System.out.println(json);
     }
 
     //Поиск по промежутку времени
-    private static void searchEmployeesByDate(List<Employee> employees) {
+    private void searchEmployeesByDate(List<Employee> employees) {
         try {
             System.out.println("Enter the start date (yyyy-mm-dd):");
             String startDateInput = scanner.next();
@@ -261,7 +282,7 @@ public class EmployeeAPI extends PostAPI {
                             (e.getCreationDate().isEqual(endDate) || e.getCreationDate().isBefore(endDate)))
                     .collect(Collectors.toList());
 
-            String json = gson.toJson(filteredEmployees);
+            String json = JSON.gson.toJson(filteredEmployees);
             System.out.println(json);
         } catch (DateTimeParseException e) {
             System.out.println("Invalid end date format. Please use the yyyy-mm-dd format.");
