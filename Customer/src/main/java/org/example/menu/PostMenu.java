@@ -3,27 +3,20 @@ package org.example.menu;
 import org.example.entity.Employee;
 import org.example.entity.Post;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 import static org.example.api.PostAPI.*;
 
 public class PostMenu {
-    public static Map<String, Post> posts = new HashMap<>();
+    public static Map<Integer, Post> posts = new HashMap<>();
 
-    static {
-        // Инициализация должностей
-        posts.put("1", new Post("1", "dev"));
-        posts.put("2", new Post("2", "ceo"));
-        posts.put("3", new Post("3", "qa"));
-    }
 
-    public static void menuPost(Map<String, Post> posts, List<Employee> employees) {
-        try (Scanner scanner = new Scanner(System.in)) {
-            boolean isRunning = true;
-            while (isRunning) {
+
+    public static void menuPost(Map<Integer, Post> posts, List<Employee> employees) {
+
+        boolean isRunning = true;
+        while (isRunning) {
+            try {
                 System.out.println("Choose an action:");
                 System.out.println("0. Return to Employee menu");
                 System.out.println("1. Create post");
@@ -66,9 +59,13 @@ public class PostMenu {
                     default:
                         System.out.println("Invalid action");
                 }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                scanner.nextLine(); // Очистка сканера
+            } catch (Exception e) {
+                System.out.println("An error occurred: " + e.getMessage());
+                scanner.nextLine(); // Очистка сканера
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }

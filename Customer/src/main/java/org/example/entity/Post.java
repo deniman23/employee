@@ -2,22 +2,19 @@ package org.example.entity;
 
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
-import java.util.List;
-
 //класс должности
 public class Post {
-    private String id;
+    private int id;
     private String postName;
 
 
-    public Post(String id, String postName) {
+    public Post(int id, String postName) {
         this.id = id;
         this.postName = postName;
     }
 
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 

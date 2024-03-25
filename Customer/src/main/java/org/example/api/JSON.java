@@ -24,8 +24,8 @@ public class JSON implements JsonSerializer<LocalDate>, JsonDeserializer<LocalDa
         }
     }
 
-    public static void processJson(JsonObject jsonData, boolean isChange, Map<String, Post> map) {
-        String id = jsonData.get("id").getAsString();
+    public static void processJson(JsonObject jsonData, boolean isChange, Map<Integer, Post> map) {
+        Integer id = Integer.valueOf(jsonData.get("id").getAsString());
         String postName = jsonData.get("postName").getAsString();
         if (isChange) {
             if (map.containsKey(id)) {

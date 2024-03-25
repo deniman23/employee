@@ -4,18 +4,19 @@ import org.example.api.EmployeeAPI;
 import org.example.entity.Employee;
 import org.example.entity.Post;
 
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
 public class EmployeeMenu extends EmployeeAPI {
 
-    public static void menuEmployee(List<Employee> employees, Map<String, Post> posts) {
+    public static void menuEmployee(List<Employee> employees, Map<Integer, Post> posts) {
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
-        try {
-            while (isRunning) {
-                System.out.println("Choose an action");
+        while (isRunning) {
+            try {
+                System.out.println("Choose an action:");
                 System.out.println("0. Go to post menu");
                 System.out.println("1. Create employee");
                 System.out.println("2. Change employee");
@@ -26,7 +27,7 @@ public class EmployeeMenu extends EmployeeAPI {
                 System.out.println("7. Exit");
 
                 int operator = scanner.nextInt();
-                scanner.nextLine(); // Считывание символа новой строки
+                scanner.nextLine(); // Reading newline character
 
                 switch (operator) {
                     case 0:
@@ -42,7 +43,7 @@ public class EmployeeMenu extends EmployeeAPI {
                         terminateEmployee(employees);
                         break;
                     case 4:
-                        outputAllEmployeesSortedByLastName(employees);
+                        outputAllEmployeesSortedByLastName(employees,posts);
                         break;
                     case 5:
                         outputEmployee(employees);
@@ -57,11 +58,13 @@ public class EmployeeMenu extends EmployeeAPI {
                     default:
                         System.out.println("Invalid action");
                 }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                scanner.nextLine(); // Очистка сканера
+            } catch (Exception e) {
+                System.out.println("An error occurred: " + e.getMessage());
+                scanner.nextLine(); // Очистка сканера
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            scanner.close();
         }
     }
 }
