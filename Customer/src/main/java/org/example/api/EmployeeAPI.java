@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import static org.example.api.JSON.*;
 
 public class EmployeeAPI {
+
     private Map<Integer, Post> posts;
     private List<Employee> employees;
     private EmployeeMenu employeeMenu;
@@ -21,7 +22,6 @@ public class EmployeeAPI {
     public EmployeeAPI(Map<Integer, Post> posts, List<Employee> employees) {
         this.posts = posts;
         this.employees = employees;
-
     }
 
     public EmployeeAPI(EmployeeMenu employeeMenu) {
@@ -46,7 +46,7 @@ public class EmployeeAPI {
 
         Post post = posts.get(postID);
         if (post == null) {
-            System.out.println("Post not found");
+            System.out.println("Position not found");
         } else {
             Employee newEmployee = new Employee(employeeID, lastName, firstName, middleName, postID);
             employees.add(newEmployee);
@@ -111,15 +111,17 @@ public class EmployeeAPI {
                 .filter(e -> e.getId() == id)
                 .findFirst()
                 .orElse(null);
+        if (employee.getTerminated() == false) {
+            if (employee == null) {
+                System.out.println("Employee with the given ID was not found.");
+            } else {
+                employee.setTerminated(true);
+                employee.setModificationDate(LocalDate.now());
 
-        if (employee == null) {
-            System.out.println("Employee with the given ID was not found.");
-        } else {
-            employee.setTerminated(true);
-            employee.setModificationDate(LocalDate.now());
-
-            System.out.println("Employee terminated successfully: ");
-        }
+                System.out.println("Employee terminated successfully: ");
+            }
+        } else
+            System.out.println("Employee already terminated");
 
     }
 
@@ -226,7 +228,19 @@ public class EmployeeAPI {
                 System.out.println("Invalid action");
         }
     }
-
+    // Добавляет в JsonObject все свойства и возвращает их со значениями
+    private String convertEmployeeToJson(Employee employee) {
+        JsonObject employeeJson = new JsonObject();
+        employeeJson.addProperty("id", employee.getId());
+        employeeJson.addProperty("lastName", employee.getLastName());
+        employeeJson.addProperty("firstName", employee.getFirstName());
+        employeeJson.addProperty("middleName", employee.getMiddleName());
+        employeeJson.addProperty("creationDate", employee.getCreationDate().toString());
+        employeeJson.addProperty("modificationDate", employee.getModificationDate().toString());
+        employeeJson.addProperty("isTerminated", employee.getTerminated());
+        return gson.toJson(employeeJson);
+    }
+    //Поиск по занимаемой должности
     private void searchEmployeesByPost(List<Employee> employees, Map<Integer, Post> posts) {
         Set<String> positions = posts.values().stream()
                 .map(Post::getPostName)
@@ -236,38 +250,32 @@ public class EmployeeAPI {
         scanner.nextLine();
         String postToFind = scanner.nextLine();
 
-        List<Employee> employeesWithPosition = employees.stream()
+        boolean positionExists = employees.stream()
                 .filter(e -> e.getPositionId() != 0 && posts.containsKey(e.getPositionId()))
-                .collect(Collectors.toList());
+                .anyMatch(e -> posts.get(e.getPositionId()).getPostName().equals(postToFind));
 
-        for (Employee employee : employeesWithPosition) {
-            if (posts.get(employee.getPositionId()).getPostName().equals(postToFind)) {
-                JsonObject employeeJson = new JsonObject();
-                employeeJson.addProperty("lastName", employee.getLastName());
-                String json = gson.toJson(employeeJson);
-                System.out.println(json);
-            }
+        if (!positionExists) {
+            System.out.println("Position not found. Please enter a valid position name.");
         }
+
+        employees.stream()
+                .filter(e -> e.getPositionId() != 0 && posts.containsKey(e.getPositionId()))
+                .filter(e -> posts.get(e.getPositionId()).getPostName().equals(postToFind))
+                .map(this::convertEmployeeToJson)
+                .forEach(System.out::println);
     }
 
-    //Поиск по фамилии, имени или отчеству
+    //Поиск по фамилии, имени и отчеству, или по частичному совпадению
     private void searchEmployeesByPartialMatch(List<Employee> employees) {
         System.out.println("Enter the first name, last name or middle name by which you want to find");
         String search = scanner.next();
 
-        List<Employee> employeesWithMatch = employees.stream()
-                .filter(employee -> employee.getLastName().toLowerCase().contains(search.toLowerCase()) ||
-                        employee.getFirstName().toLowerCase().contains(search.toLowerCase()) ||
-                        employee.getMiddleName().toLowerCase().contains(search.toLowerCase()))
-                .collect(Collectors.toList());
-        for (Employee employee : employeesWithMatch) {
-            JsonObject employeeJson = new JsonObject();
-            employeeJson.addProperty("lastName", employee.getLastName());
-            employeeJson.addProperty("firstName", employee.getFirstName());
-            employeeJson.addProperty("middleName", employee.getMiddleName());
-            String json = gson.toJson(employeeJson);
-            System.out.println(json);
-        }
+        employees.stream()
+                .filter(e -> e.getLastName().toLowerCase().contains(search.toLowerCase()) ||
+                        e.getFirstName().toLowerCase().contains(search.toLowerCase()) ||
+                        e.getMiddleName().toLowerCase().contains(search.toLowerCase()))
+                .map(this::convertEmployeeToJson)
+                .forEach(System.out::println);
     }
 
     //Поиск по промежутку времени
@@ -279,24 +287,11 @@ public class EmployeeAPI {
             System.out.println("Enter the end date (yyyy-mm-dd):");
             String endDateInput = scanner.next();
             LocalDate endDate = LocalDate.parse(endDateInput);
-
-            List<Employee> filteredEmployees = employees.stream()
+            employees.stream()
                     .filter(e -> (e.getCreationDate().isEqual(startDate) || e.getCreationDate().isAfter(startDate)) &&
                             (e.getCreationDate().isEqual(endDate) || e.getCreationDate().isBefore(endDate)))
-                    .collect(Collectors.toList());
-
-            for (Employee employee : filteredEmployees) {
-                JsonObject employeeJson = new JsonObject();
-                employeeJson.addProperty("id", employee.getId());
-                employeeJson.addProperty("lastName", employee.getLastName());
-                employeeJson.addProperty("firstName", employee.getFirstName());
-                employeeJson.addProperty("middleName", employee.getMiddleName());
-                employeeJson.addProperty("creationDate", employee.getCreationDate().toString());
-                employeeJson.addProperty("modificationDate", employee.getModificationDate().toString());
-                employeeJson.addProperty("isTerminated", employee.getTerminated());
-                String json = gson.toJson(employeeJson);
-                System.out.println(json);
-            }
+                    .map(this::convertEmployeeToJson)
+                    .forEach(System.out::println);
         } catch (DateTimeParseException e) {
             System.out.println("Invalid end date format. Please use the yyyy-mm-dd format.");
         }

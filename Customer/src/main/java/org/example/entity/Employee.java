@@ -7,8 +7,8 @@ import java.util.Random;
 
 //класс сотрудника
 public class Employee {
-    Random random = new Random();
-    private int id = random.nextInt();
+
+    private int id;
     private final LocalDate creationDate;
     private LocalDate modificationDate;
     private String lastName;
@@ -18,7 +18,8 @@ public class Employee {
     private Post position;
     private boolean isTerminated;
 
-    public Employee(String lastName, String firstName, String middleName, int positionId) {
+    public Employee(int id ,String lastName, String firstName, String middleName, int positionId) {
+        this.id = id;
         this.creationDate = LocalDate.now();
         this.modificationDate = LocalDate.now();
         this.lastName = lastName;
@@ -28,14 +29,6 @@ public class Employee {
         this.isTerminated = false;
     }
 
-//    public Employee(Employee employee) {
-//        creationDate = employee.getCreationDate();
-//        modificationDate = employee.getModificationDate();
-//        lastName = employee.getLastName();
-//        firstName = employee.getFirstName();
-//        middleName = employee.getMiddleName();
-//        positionId = employee.getPositionId();
-//    }
 
 
     public void setPositionId(int positionId) {
@@ -57,7 +50,10 @@ public class Employee {
     public void setTerminated(boolean terminated) {
         isTerminated = terminated;
     }
-    public boolean getTerminated(){return isTerminated;}
+
+    public boolean getTerminated() {
+        return isTerminated;
+    }
 
     public String getFirstName() {
         return firstName;
