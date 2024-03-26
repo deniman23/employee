@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 
 import java.time.LocalDate;
 import java.util.Random;
-import java.util.UUID;
 
 //класс сотрудника
 public class Employee {
@@ -29,14 +28,14 @@ public class Employee {
         this.isTerminated = false;
     }
 
-    public Employee(Employee employee) {
-        creationDate = employee.getCreationDate();
-        modificationDate = employee.getModificationDate();
-        lastName = employee.getLastName();
-        firstName = employee.getFirstName();
-        middleName = employee.getMiddleName();
-        positionId = employee.getPositionId();
-    }
+//    public Employee(Employee employee) {
+//        creationDate = employee.getCreationDate();
+//        modificationDate = employee.getModificationDate();
+//        lastName = employee.getLastName();
+//        firstName = employee.getFirstName();
+//        middleName = employee.getMiddleName();
+//        positionId = employee.getPositionId();
+//    }
 
 
     public void setPositionId(int positionId) {
@@ -117,7 +116,4 @@ public class Employee {
         return super.hashCode();
     }
 
-    public String toJson() {
-        return new Gson().toJson(this);
-    }
 }

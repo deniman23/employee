@@ -11,9 +11,7 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
-import static org.example.api.JSON.gson;
-import static org.example.api.JSON.scanner;
+import static org.example.api.JSON.*;
 
 public class EmployeeAPI {
     private Map<Integer, Post> posts;
@@ -256,14 +254,20 @@ public class EmployeeAPI {
     private void searchEmployeesByPartialMatch(List<Employee> employees) {
         System.out.println("Enter the first name, last name or middle name by which you want to find");
         String search = scanner.next();
-        List<Employee> foundEmployees = employees.stream()
-                .filter(e -> e.getLastName().toLowerCase().contains(search.toLowerCase()) ||
-                        e.getFirstName().toLowerCase().contains(search.toLowerCase()) ||
-                        e.getMiddleName().toLowerCase().contains(search.toLowerCase()))
-                .collect(Collectors.toList());
 
-        String json = JSON.gson.toJson(foundEmployees);
-        System.out.println(json);
+        List<Employee> employeesWithMatch = employees.stream()
+                .filter(employee -> employee.getLastName().toLowerCase().contains(search.toLowerCase()) ||
+                        employee.getFirstName().toLowerCase().contains(search.toLowerCase()) ||
+                        employee.getMiddleName().toLowerCase().contains(search.toLowerCase()))
+                .collect(Collectors.toList());
+        for (Employee employee : employeesWithMatch) {
+            JsonObject employeeJson = new JsonObject();
+            employeeJson.addProperty("lastName", employee.getLastName());
+            employeeJson.addProperty("firstName", employee.getFirstName());
+            employeeJson.addProperty("middleName", employee.getMiddleName());
+            String json = gson.toJson(employeeJson);
+            System.out.println(json);
+        }
     }
 
     //Поиск по промежутку времени
@@ -281,8 +285,18 @@ public class EmployeeAPI {
                             (e.getCreationDate().isEqual(endDate) || e.getCreationDate().isBefore(endDate)))
                     .collect(Collectors.toList());
 
-            String json = JSON.gson.toJson(filteredEmployees);
-            System.out.println(json);
+            for (Employee employee : filteredEmployees) {
+                JsonObject employeeJson = new JsonObject();
+                employeeJson.addProperty("id", employee.getId());
+                employeeJson.addProperty("lastName", employee.getLastName());
+                employeeJson.addProperty("firstName", employee.getFirstName());
+                employeeJson.addProperty("middleName", employee.getMiddleName());
+                employeeJson.addProperty("creationDate", employee.getCreationDate().toString());
+                employeeJson.addProperty("modificationDate", employee.getModificationDate().toString());
+                employeeJson.addProperty("isTerminated", employee.getTerminated());
+                String json = gson.toJson(employeeJson);
+                System.out.println(json);
+            }
         } catch (DateTimeParseException e) {
             System.out.println("Invalid end date format. Please use the yyyy-mm-dd format.");
         }

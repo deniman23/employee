@@ -24,7 +24,7 @@ public class Main {
         employees = new ArrayList<>();
         postAPI = new PostAPI(posts);
         employeeAPI = new EmployeeAPI(posts, employees);
-        employeeMenu = new EmployeeMenu(employeeAPI, null); // Временно передаем null для postMenu
+        employeeMenu = new EmployeeMenu(employeeAPI, null);
         postMenu = new PostMenu(postAPI, employeeAPI, employeeMenu);
         employeeMenu.setPostMenu(postMenu);
 
