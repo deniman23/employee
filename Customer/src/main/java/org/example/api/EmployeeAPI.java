@@ -30,7 +30,7 @@ public class EmployeeAPI {
 
     //Создание сотрудника
     public void createEmployee(List<Employee> employees) {
-
+        int employeeID = posts.size() + 1;
         System.out.println("Enter lastName");
         String lastName = scanner.nextLine();
 
@@ -48,7 +48,7 @@ public class EmployeeAPI {
         if (post == null) {
             System.out.println("Post not found");
         } else {
-            Employee newEmployee = new Employee(lastName, firstName, middleName, postID);
+            Employee newEmployee = new Employee(employeeID, lastName, firstName, middleName, postID);
             employees.add(newEmployee);
             System.out.println("Success, id: " + newEmployee.getId());
         }
