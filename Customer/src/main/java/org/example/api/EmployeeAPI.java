@@ -237,19 +237,18 @@ public class EmployeeAPI {
         System.out.println("Examples: " + String.join(", ", positions));
         scanner.nextLine();
         String postToFind = scanner.nextLine();
-        List<Employee> foundEmployees = employees.stream()
-                .filter(employee -> {
-                    Post position = posts.get(employee.getPositionId());
-                    return position != null && position.getPostName().equalsIgnoreCase(postToFind);
-                })
+
+        List<Employee> employeesWithPosition = employees.stream()
+                .filter(e -> e.getPositionId() != 0 && posts.containsKey(e.getPositionId()))
                 .collect(Collectors.toList());
 
-
-        if (foundEmployees.isEmpty()) {
-            System.out.println("No employees found for the given position.");
-        } else {
-            String json = gson.toJson(foundEmployees);
-            System.out.println(json);
+        for (Employee employee : employeesWithPosition) {
+            if (posts.get(employee.getPositionId()).getPostName().equals(postToFind)) {
+                JsonObject employeeJson = new JsonObject();
+                employeeJson.addProperty("lastName", employee.getLastName());
+                String json = gson.toJson(employeeJson);
+                System.out.println(json);
+            }
         }
     }
 
