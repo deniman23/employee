@@ -28,19 +28,25 @@ public class Main {
         postMenu = new PostMenu(postAPI, employeeAPI, employeeMenu);
         employeeMenu.setPostMenu(postMenu);
 
-
-        posts.put(1, new Post(1, "dev"));
-        posts.put(2, new Post(2, "ceo"));
-        posts.put(3, new Post(3, "qa"));
-
-        employees.add(new Employee(1,"Ivanov", "Ivan", "Ivanovich", 1));
-        employees.add(new Employee(2,"Alexeev", "Alex", "Alexevich", 2));
-        employees.add(new Employee(3,"Vitaliev", "Vitaly", "Vitalievich", 3));
+        postInitializer();
+        employeeInitializer();
 
         employeeMenu.menuEmployee(employees, posts);
     }
 
     public static void main(String[] args) {
         new Main();
+    }
+
+    private void postInitializer() {
+        posts.put(1, new Post(1, "dev"));
+        posts.put(2, new Post(2, "ceo"));
+        posts.put(3, new Post(3, "qa"));
+    }
+
+    private void employeeInitializer() {
+        employees.add(new Employee(1, "Ivanov", "Ivan", "Ivanovich", 1));
+        employees.add(new Employee(2, "Alexeev", "Alex", "Alexevich", 2));
+        employees.add(new Employee(3, "Vitaliev", "Vitaly", "Vitalievich", 3));
     }
 }

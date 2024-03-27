@@ -1,6 +1,5 @@
 package org.example.entity;
 
-import com.google.gson.Gson;
 
 //класс должности
 public class Post {
@@ -24,11 +23,5 @@ public class Post {
 
     public void setPostName(String postName) {
         this.postName = postName;
-    }
-
-
-    // Convert Post details to JSON
-    public String toJson() {
-        return new Gson().toJson(this);
     }
 }

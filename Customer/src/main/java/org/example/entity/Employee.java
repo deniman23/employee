@@ -1,9 +1,7 @@
 package org.example.entity;
 
-import com.google.gson.Gson;
 
 import java.time.LocalDate;
-import java.util.Random;
 
 //класс сотрудника
 public class Employee {
@@ -18,7 +16,7 @@ public class Employee {
     private Post position;
     private boolean isTerminated;
 
-    public Employee(int id ,String lastName, String firstName, String middleName, int positionId) {
+    public Employee(int id, String lastName, String firstName, String middleName, int positionId) {
         this.id = id;
         this.creationDate = LocalDate.now();
         this.modificationDate = LocalDate.now();
@@ -28,7 +26,6 @@ public class Employee {
         this.positionId = positionId;
         this.isTerminated = false;
     }
-
 
 
     public void setPositionId(int positionId) {

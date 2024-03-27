@@ -44,7 +44,7 @@ public class JSON implements JsonSerializer<LocalDate>, JsonDeserializer<LocalDa
 
     @Override
     public JsonElement serialize(LocalDate src, Type typeOfSrc, JsonSerializationContext context) {
-        return new JsonPrimitive(src.toString()); // "yyyy-mm-dd"
+        return new JsonPrimitive(src.toString());
     }
 
     @Override

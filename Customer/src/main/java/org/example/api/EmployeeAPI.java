@@ -2,6 +2,7 @@ package org.example.api;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.example.entity.Employee;
 import org.example.entity.Post;
 import org.example.menu.EmployeeMenu;
@@ -28,9 +29,23 @@ public class EmployeeAPI {
         this.employeeMenu = employeeMenu;
     }
 
+    // Добавляет в JsonObject все свойства и возвращает их со значениями
+    private String convertEmployeeToJson(Employee employee) {
+        JsonObject employeeJson = new JsonObject();
+        employeeJson.addProperty("id", employee.getId());
+        employeeJson.addProperty("lastName", employee.getLastName());
+        employeeJson.addProperty("firstName", employee.getFirstName());
+        employeeJson.addProperty("middleName", employee.getMiddleName());
+        employeeJson.addProperty("creationDate", employee.getCreationDate().toString());
+        employeeJson.addProperty("modificationDate", employee.getModificationDate().toString());
+        employeeJson.addProperty("isTerminated", employee.getTerminated());
+        return gson.toJson(employeeJson);
+    }
+
+
     //Создание сотрудника
-    public void createEmployee(List<Employee> employees) {
-        int employeeID = posts.size() + 1;
+    public void createEmployee(List<Employee> employees, Map<Integer, Post> posts) {
+        int employeeID = employees.size() + 1;
         System.out.println("Enter lastName");
         String lastName = scanner.nextLine();
 
@@ -89,7 +104,6 @@ public class EmployeeAPI {
             employee.setPositionId(postID);
         } else {
             System.out.println("Post not found");
-            return;
         }
 
         employee.setLastName(lastName);
@@ -111,18 +125,20 @@ public class EmployeeAPI {
                 .filter(e -> e.getId() == id)
                 .findFirst()
                 .orElse(null);
-        if (employee.getTerminated() == false) {
-            if (employee == null) {
-                System.out.println("Employee with the given ID was not found.");
-            } else {
-                employee.setTerminated(true);
-                employee.setModificationDate(LocalDate.now());
 
-                System.out.println("Employee terminated successfully: ");
-            }
-        } else
+        if (employee == null) {
+            System.out.println("Employee with the given ID was not found.");
+            return;
+        }
+
+        if (employee.getTerminated()) {
             System.out.println("Employee already terminated");
+            return;
+        }
 
+        employee.setTerminated(true);
+        employee.setModificationDate(LocalDate.now());
+        System.out.println("Employee terminated successfully");
     }
 
     //Вывести всех сотрудников отсортированных по Фамилии
@@ -131,17 +147,10 @@ public class EmployeeAPI {
             System.out.println("Empty");
         } else {
             employees.sort(Comparator.comparing(Employee::getLastName));
-
             JsonArray employeesJsonArray = new JsonArray();
             for (Employee employee : employees) {
-                JsonObject employeeJson = new JsonObject();
-                employeeJson.addProperty("id", employee.getId());
-                employeeJson.addProperty("lastName", employee.getLastName());
-                employeeJson.addProperty("firstName", employee.getFirstName());
-                employeeJson.addProperty("middleName", employee.getMiddleName());
-                employeeJson.addProperty("creationDate", employee.getCreationDate().toString());
-                employeeJson.addProperty("modificationDate", employee.getModificationDate().toString());
-                employeeJson.addProperty("isTerminated", employee.getTerminated());
+                String employeeJsonString = convertEmployeeToJson(employee);
+                JsonObject employeeJson = JsonParser.parseString(employeeJsonString).getAsJsonObject();
 
                 Post post = posts.get(employee.getPositionId());
                 JsonObject postJson = new JsonObject();
@@ -153,10 +162,8 @@ public class EmployeeAPI {
                     postJson.addProperty("postName", "Not found");
                 }
                 employeeJson.add("post", postJson);
-
                 employeesJsonArray.add(employeeJson);
             }
-
             String json = gson.toJson(employeesJsonArray);
             System.out.println(json);
         }
@@ -176,16 +183,8 @@ public class EmployeeAPI {
         if (employee == null) {
             System.out.println("Employee with the given ID was not found.");
         } else {
-            JsonObject employeeJson = new JsonObject();
-            employeeJson.addProperty("id", employee.getId());
-            employeeJson.addProperty("lastName", employee.getLastName());
-            employeeJson.addProperty("firstName", employee.getFirstName());
-            employeeJson.addProperty("middleName", employee.getMiddleName());
-            employeeJson.addProperty("creationDate", employee.getCreationDate().toString());
-            employeeJson.addProperty("modificationDate", employee.getModificationDate().toString());
-            employeeJson.addProperty("isTerminated", employee.getTerminated());
+            String employeeJson = convertEmployeeToJson(employee);
 
-            // Получение объекта Post по positionId и добавление информации о должности
             Post post = posts.get(employee.getPositionId());
             JsonObject postJson = new JsonObject();
             if (post != null) {
@@ -195,10 +194,11 @@ public class EmployeeAPI {
                 postJson.addProperty("id", "Not found");
                 postJson.addProperty("postName", "Not found");
             }
-            employeeJson.add("post", postJson);
 
-            String json = gson.toJson(employeeJson);
-            System.out.println(json);
+            JsonObject employeeData = JsonParser.parseString(employeeJson).getAsJsonObject();
+            employeeData.add("post", postJson);
+
+            System.out.println(gson.toJson(employeeData));
         }
     }
 
@@ -228,18 +228,8 @@ public class EmployeeAPI {
                 System.out.println("Invalid action");
         }
     }
-    // Добавляет в JsonObject все свойства и возвращает их со значениями
-    private String convertEmployeeToJson(Employee employee) {
-        JsonObject employeeJson = new JsonObject();
-        employeeJson.addProperty("id", employee.getId());
-        employeeJson.addProperty("lastName", employee.getLastName());
-        employeeJson.addProperty("firstName", employee.getFirstName());
-        employeeJson.addProperty("middleName", employee.getMiddleName());
-        employeeJson.addProperty("creationDate", employee.getCreationDate().toString());
-        employeeJson.addProperty("modificationDate", employee.getModificationDate().toString());
-        employeeJson.addProperty("isTerminated", employee.getTerminated());
-        return gson.toJson(employeeJson);
-    }
+
+
     //Поиск по занимаемой должности
     private void searchEmployeesByPost(List<Employee> employees, Map<Integer, Post> posts) {
         Set<String> positions = posts.values().stream()

@@ -2,6 +2,7 @@ package org.example.api;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.example.entity.Employee;
 import org.example.entity.Post;
 
@@ -13,6 +14,18 @@ public class PostAPI extends JSON {
 
     public PostAPI(Map<Integer, Post> posts) {
         this.posts = posts;
+    }
+
+    private String convertPostToJson(Post post) {
+        JsonObject postJson = new JsonObject();
+        if (post != null) {
+            postJson.addProperty("id", post.getId());
+            postJson.addProperty("postName", post.getPostName());
+        } else {
+            postJson.addProperty("id", "Not found");
+            postJson.addProperty("postName", "Not found");
+        }
+        return gson.toJson(postJson);
     }
 
     //Создание должности
@@ -34,24 +47,36 @@ public class PostAPI extends JSON {
     }
 
     //Изменение должности вводить в формате json
-    public void changePost(Map<Integer, Post> map) {
-        System.out.println("Enter json for existing post:");
-        String data = scanner.nextLine();
-        JsonObject jsonData = parseJson(data, gson);
-        if (jsonData != null) {
-            processJson(jsonData, true, map);
+    public void changePost(Map<Integer, Post> posts) {
+        System.out.println("Enter ID:");
+        int id = Integer.parseInt(scanner.nextLine()); // Используйте Integer.parseInt для чтения числа
+
+        System.out.println("Enter new position name:");
+        String postName = scanner.nextLine();
+
+        Post post = posts.get(id);
+        if (post != null) {
+            post.setPostName(postName);
+            System.out.println("Post updated successfully");
+        } else {
+            System.out.println("Post not found");
         }
     }
+//        System.out.println("Enter json for existing post:");
+//        String data = scanner.nextLine();
+//        JsonObject jsonData = parseJson(data, gson);
+//        if (jsonData != null) {
+//            processJson(jsonData, true, map);
+//        }
 
     //Удаление должности по ID
-    public void deletePost(Map<Integer, Post> map) {
+    public void deletePost(Map<Integer, Post> posts) {
         outputAllPosts(posts);
         System.out.println("Enter ID");
         int id = scanner.nextInt();
 
-
-        if (map.containsKey(id)) {
-            map.remove(id);
+        if (posts.containsKey(id)) {
+            posts.remove(id);
             System.out.println("Success");
         } else
             System.out.println("Error");
@@ -59,13 +84,13 @@ public class PostAPI extends JSON {
 
     //Вывод всех должностей с индексом
     public void outputAllPosts(Map<Integer, Post> posts) {
-        if (!posts.isEmpty()) {
-            posts.values().forEach(post -> System.out.println("{\"id\": " + post.getId() +
-                    ", \"postName\": " + post.getPostName() + "}"));
-        } else {
+        if (posts.isEmpty()) {
             System.out.println("Empty");
+        } else {
+            posts.values().stream()
+                    .map(this::convertPostToJson)
+                    .forEach(System.out::println);
         }
-
     }
 
     //Вывод одной должности
@@ -73,14 +98,9 @@ public class PostAPI extends JSON {
         System.out.println("Enter ID");
         int id = scanner.nextInt();
         scanner.nextLine();
-
-        if (map.containsKey(id)) {
-            Post post = map.get(id);
-            System.out.println("{\"id\": " + post.getId() +
-                    ", \"postName\": \"" + post.getPostName() + "\"}");
-        } else {
-            System.out.println("Not found");
-        }
+        Post post = map.get(id);
+        String postJson = convertPostToJson(post);
+        System.out.println(postJson);
     }
 
     //Вывод должностей с фамилиями сотрудников

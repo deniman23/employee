@@ -49,7 +49,7 @@ public class EmployeeMenu{
                         postMenu.menuPost(posts, employees);
                         break;
                     case 1:
-                        employeeAPI.createEmployee(employees);
+                        employeeAPI.createEmployee(employees, posts);
                         break;
                     case 2:
                         employeeAPI.changeEmployee(employees, posts);
