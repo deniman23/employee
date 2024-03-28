@@ -1,32 +1,27 @@
 package org.example.api;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.example.entity.Employee;
 import org.example.entity.Post;
 
 import java.util.*;
 
+import static org.example.api.JSON.scanner;
 
-public class PostAPI extends JSON {
-    private Map<Integer, Post> posts;
 
-    public PostAPI(Map<Integer, Post> posts) {
+public class PostAPI {
+    private final Map<Integer, Post> posts;
+    private final List<Employee> employees;
+    private final JSON json;
+    public PostAPI(Map<Integer, Post> posts, List<Employee> employees, JSON json) {
         this.posts = posts;
+        this.employees = employees;
+        this.json = json;
     }
 
-    private String convertPostToJson(Post post) {
-        JsonObject postJson = new JsonObject();
-        if (post != null) {
-            postJson.addProperty("id", post.getId());
-            postJson.addProperty("postName", post.getPostName());
-        } else {
-            postJson.addProperty("id", "Not found");
-            postJson.addProperty("postName", "Not found");
-        }
-        return gson.toJson(postJson);
-    }
 
     //Создание должности
     public void createPost() {
@@ -47,7 +42,7 @@ public class PostAPI extends JSON {
     }
 
     //Изменение должности вводить в формате json
-    public void changePost(Map<Integer, Post> posts) {
+    public void changePost() {
         System.out.println("Enter ID:");
         int id = Integer.parseInt(scanner.nextLine()); // Используйте Integer.parseInt для чтения числа
 
@@ -62,16 +57,10 @@ public class PostAPI extends JSON {
             System.out.println("Post not found");
         }
     }
-//        System.out.println("Enter json for existing post:");
-//        String data = scanner.nextLine();
-//        JsonObject jsonData = parseJson(data, gson);
-//        if (jsonData != null) {
-//            processJson(jsonData, true, map);
-//        }
 
     //Удаление должности по ID
-    public void deletePost(Map<Integer, Post> posts) {
-        outputAllPosts(posts);
+    public void deletePost() {
+        outputAllPosts();
         System.out.println("Enter ID");
         int id = scanner.nextInt();
 
@@ -83,41 +72,43 @@ public class PostAPI extends JSON {
     }
 
     //Вывод всех должностей с индексом
-    public void outputAllPosts(Map<Integer, Post> posts) {
+    public void outputAllPosts() {
         if (posts.isEmpty()) {
             System.out.println("Empty");
         } else {
             posts.values().stream()
-                    .map(this::convertPostToJson)
+                    .map(json::convertPostToJson)
                     .forEach(System.out::println);
         }
     }
 
     //Вывод одной должности
-    public void outputPost(Map<Integer, Post> map) {
+    public void outputPost() {
         System.out.println("Enter ID");
         int id = scanner.nextInt();
         scanner.nextLine();
-        Post post = map.get(id);
-        String postJson = convertPostToJson(post);
+        Post post = posts.get(id);
+        String postJson = json.convertPostToJson(post);
         System.out.println(postJson);
     }
 
     //Вывод должностей с фамилиями сотрудников
-    public void outputPostsWithEmployees(Map<Integer, Post> posts, List<Employee> employees) {
+    public void outputPostsWithEmployees() {
+        ObjectMapper mapper = new ObjectMapper();
         for (Map.Entry<Integer, Post> postEntry : posts.entrySet()) {
-            JsonObject postObject = new JsonObject();
-            postObject.addProperty("PostName", postEntry.getValue().getPostName());
-
-            JsonArray employeesLastNamesArray = new JsonArray();
-            employees.stream()
-                    .filter(employee -> employee.getPositionId() == postEntry.getKey())
-                    .sorted(Comparator.comparing(Employee::getLastName))
-                    .forEach(employee -> employeesLastNamesArray.add(employee.getLastName()));
-
-            postObject.add("EmployeesLastNames", employeesLastNamesArray);
-
-            System.out.println(gson.toJson(postObject));
+            String postJsonString = json.convertPostToJson(postEntry.getValue());
+            try {
+                ObjectNode postObject = (ObjectNode) mapper.readTree(postJsonString);
+                ArrayNode employeesLastNamesArray = mapper.createArrayNode();
+                employees.stream()
+                        .filter(employee -> employee.getPositionId() == postEntry.getKey())
+                        .sorted(Comparator.comparing(Employee::getLastName))
+                        .forEach(employee -> employeesLastNamesArray.add(employee.getLastName()));
+                postObject.set("EmployeesLastNames", employeesLastNamesArray);
+                System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(postObject));
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

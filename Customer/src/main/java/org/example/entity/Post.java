@@ -3,15 +3,13 @@ package org.example.entity;
 
 //класс должности
 public class Post {
-    private int id;
+    private final int id;
     private String postName;
-
 
     public Post(int id, String postName) {
         this.id = id;
         this.postName = postName;
     }
-
 
     public int getId() {
         return id;

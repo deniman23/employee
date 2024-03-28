@@ -1,12 +1,11 @@
 package org.example.entity;
 
-
 import java.time.LocalDate;
 
 //класс сотрудника
 public class Employee {
 
-    private int id;
+    private final int id;
     private final LocalDate creationDate;
     private LocalDate modificationDate;
     private String lastName;
@@ -64,7 +63,6 @@ public class Employee {
         return id;
     }
 
-
     public String getLastName() {
         return lastName;
     }
@@ -91,22 +89,6 @@ public class Employee {
 
     public LocalDate getCreationDate() {
         return creationDate;
-    }
-
-
-    @Override
-    public String toString() {
-        return super.toString();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
     }
 
 }

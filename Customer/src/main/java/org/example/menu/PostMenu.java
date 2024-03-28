@@ -1,6 +1,5 @@
 package org.example.menu;
 
-import org.example.api.EmployeeAPI;
 import org.example.api.PostAPI;
 import org.example.entity.Employee;
 import org.example.entity.Post;
@@ -11,19 +10,16 @@ import static org.example.api.JSON.scanner;
 
 
 public class PostMenu {
-    private PostAPI postAPI;
-    private EmployeeAPI employeeAPI;
-    private EmployeeMenu employeeMenu;
+    private final PostAPI postAPI;
+    private final EmployeeMenu employeeMenu;
 
-    public PostMenu(PostAPI postAPI, EmployeeAPI employeeAPI,EmployeeMenu employeeMenu) {
+    public PostMenu(PostAPI postAPI, EmployeeMenu employeeMenu) {
         this.postAPI = postAPI;
-        this.employeeAPI = employeeAPI;
         this.employeeMenu = employeeMenu;
     }
 
 
-
-    public void menuPost(Map<Integer, Post> posts, List<Employee> employees) {
+    public void menuPost() {
 
         boolean isRunning = true;
         while (isRunning) {
@@ -39,29 +35,29 @@ public class PostMenu {
                 System.out.println("7. Exit");
 
                 int operator = scanner.nextInt();
-                scanner.nextLine(); // Считывание символа новой строки
+                scanner.nextLine();
 
                 switch (operator) {
                     case 0:
-                        employeeMenu.menuEmployee(employees, posts);
+                        employeeMenu.menuEmployee();
                         break;
                     case 1:
                         postAPI.createPost();
                         break;
                     case 2:
-                        postAPI.changePost(posts);
+                        postAPI.changePost();
                         break;
                     case 3:
-                        postAPI.deletePost(posts);
+                        postAPI.deletePost();
                         break;
                     case 4:
-                        postAPI.outputAllPosts(posts);
+                        postAPI.outputAllPosts();
                         break;
                     case 5:
-                        postAPI.outputPost(posts);
+                        postAPI.outputPost();
                         break;
                     case 6:
-                        postAPI.outputPostsWithEmployees(posts, employees);
+                        postAPI.outputPostsWithEmployees();
                         break;
                     case 7:
                         isRunning = false;

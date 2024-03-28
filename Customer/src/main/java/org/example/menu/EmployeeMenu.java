@@ -1,21 +1,14 @@
 package org.example.menu;
 
-import org.example.Main;
 import org.example.api.EmployeeAPI;
-import org.example.api.PostAPI;
-import org.example.entity.Employee;
-import org.example.entity.Post;
 
 import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Map;
 
-import static org.example.api.EmployeeAPI.*;
 import static org.example.api.JSON.scanner;
 
 
 public class EmployeeMenu{
-    private EmployeeAPI employeeAPI;
+    private final EmployeeAPI employeeAPI;
     private PostMenu postMenu;
 
     public EmployeeMenu(EmployeeAPI employeeAPI, PostMenu postMenu) {
@@ -27,7 +20,7 @@ public class EmployeeMenu{
         this.postMenu = postMenu;
     }
 
-    public void menuEmployee(List<Employee> employees, Map<Integer, Post> posts) {
+    public void menuEmployee() {
         boolean isRunning = true;
         while (isRunning) {
             try {
@@ -46,25 +39,25 @@ public class EmployeeMenu{
 
                 switch (operator) {
                     case 0:
-                        postMenu.menuPost(posts, employees);
+                        postMenu.menuPost();
                         break;
                     case 1:
-                        employeeAPI.createEmployee(employees, posts);
+                        employeeAPI.createEmployee();
                         break;
                     case 2:
-                        employeeAPI.changeEmployee(employees, posts);
+                        employeeAPI.changeEmployee();
                         break;
                     case 3:
-                        employeeAPI.terminateEmployee(employees);
+                        employeeAPI.terminateEmployee();
                         break;
                     case 4:
-                        employeeAPI.outputAllEmployeesSortedByLastName(employees, posts);
+                        employeeAPI.outputAllEmployeesSortedByLastName();
                         break;
                     case 5:
-                        employeeAPI.outputEmployee(employees, posts);
+                        employeeAPI.outputEmployee();
                         break;
                     case 6:
-                        employeeAPI.outputEmployeesByFilter(employees);
+                        employeeAPI.outputEmployeesByFilter();
                         break;
                     case 7:
                         isRunning = false;

@@ -1,6 +1,7 @@
 package org.example;
 
 import org.example.api.EmployeeAPI;
+import org.example.api.JSON;
 import org.example.api.PostAPI;
 import org.example.entity.Employee;
 import org.example.entity.Post;
@@ -12,29 +13,32 @@ import java.util.*;
 
 
 public class Main {
+    private List<Employee> employees;
+    public Map<Integer, Post> posts;
     private EmployeeMenu employeeMenu;
     private EmployeeAPI employeeAPI;
     private PostMenu postMenu;
     private PostAPI postAPI;
-    private List<Employee> employees;
-    private Map<Integer, Post> posts;
+    private JSON json;
 
     public Main() {
         posts = new HashMap<>();
         employees = new ArrayList<>();
-        postAPI = new PostAPI(posts);
-        employeeAPI = new EmployeeAPI(posts, employees);
+        json = new JSON();
+        postAPI = new PostAPI(posts, employees, json);
+        employeeAPI = new EmployeeAPI(posts, employees, employeeMenu, json);
         employeeMenu = new EmployeeMenu(employeeAPI, null);
-        postMenu = new PostMenu(postAPI, employeeAPI, employeeMenu);
+        postMenu = new PostMenu(postAPI, employeeMenu);
         employeeMenu.setPostMenu(postMenu);
 
         postInitializer();
         employeeInitializer();
 
-        employeeMenu.menuEmployee(employees, posts);
+        employeeMenu.menuEmployee();
     }
 
     public static void main(String[] args) {
+
         new Main();
     }
 

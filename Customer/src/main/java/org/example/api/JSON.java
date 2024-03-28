@@ -1,56 +1,71 @@
 package org.example.api;
 
-import com.google.gson.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.example.entity.Employee;
 import org.example.entity.Post;
 
-import java.lang.reflect.Type;
-import java.time.LocalDate;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Scanner;
 
-public class JSON implements JsonSerializer<LocalDate>, JsonDeserializer<LocalDate> {
+public class JSON {
     public static Scanner scanner = new Scanner(System.in);
-    static Gson gson = new GsonBuilder()
-            .registerTypeAdapter(LocalDate.class, new JSON())
-            .setPrettyPrinting()
-            .create();
-    static JsonObject postObject = new JsonObject();
+    public static final ObjectMapper objectMapper = new ObjectMapper();
 
-    //Метод приводит входящий String в json
-    public static JsonObject parseJson(String data, Gson gson) {
+    // Добавляет в JsonObject все свойства и возвращает их со значениями
+    public String convertPostToJson(Post post) {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode postJson = mapper.createObjectNode();
+        if (post != null) {
+            postJson.put("id", post.getId());
+            postJson.put("postName", post.getPostName());
+        } else {
+            postJson.put("id", "Not found");
+            postJson.put("postName", "Not found");
+        }
         try {
-            return gson.fromJson(data, JsonObject.class);
-        } catch (Exception e) {
-            System.out.println("Error parsing JSON: " + e.getMessage());
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(postJson);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
             return null;
         }
     }
+    public String convertEmployeeToJson(Employee employee, Map<Integer, Post> posts)  {
+        ObjectNode employeeJson = objectMapper.createObjectNode();
+        employeeJson.put("id", employee.getId());
+        employeeJson.put("lastName", employee.getLastName());
+        employeeJson.put("firstName", employee.getFirstName());
+        employeeJson.put("middleName", employee.getMiddleName());
 
-    public static void processJson(JsonObject jsonData, boolean isChange, Map<Integer, Post> map) {
-        Integer id = Integer.valueOf(jsonData.get("id").getAsString());
-        String postName = jsonData.get("postName").getAsString();
-        if (isChange) {
-            if (map.containsKey(id)) {
-                map.get(id).setPostName(postName);
-                System.out.println("Post updated successfully.");
-            } else {
-                System.out.println("Post with given ID does not exist.");
-            }
-        } else {
-            map.put(id, new Post(id, postName));
-            System.out.println("Post created successfully.");
+        ArrayNode creationDateArray = objectMapper.createArrayNode();
+        creationDateArray.add(employee.getCreationDate().getYear());
+        creationDateArray.add(employee.getCreationDate().getMonthValue());
+        creationDateArray.add(employee.getCreationDate().getDayOfMonth());
+        employeeJson.set("creationDate", creationDateArray);
+
+        ArrayNode modificationDateArray = objectMapper.createArrayNode();
+        modificationDateArray.add(employee.getModificationDate().getYear());
+        modificationDateArray.add(employee.getModificationDate().getMonthValue());
+        modificationDateArray.add(employee.getModificationDate().getDayOfMonth());
+        employeeJson.set("modificationDate", modificationDateArray);
+
+        employeeJson.put("terminated", employee.getTerminated());
+
+        String postJson = convertPostToJson(posts.get(employee.getPositionId()));
+        try {
+            employeeJson.set("post", objectMapper.readTree(postJson));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(employeeJson);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
     }
-
-    @Override
-    public JsonElement serialize(LocalDate src, Type typeOfSrc, JsonSerializationContext context) {
-        return new JsonPrimitive(src.toString());
-    }
-
-    @Override
-    public LocalDate deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-            throws JsonParseException {
-        return LocalDate.parse(json.getAsString());
-    }
-
 }
