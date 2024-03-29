@@ -12,6 +12,7 @@ public class EmployeeDataService {
 
     public EmployeeDataService(List<Employee> employees) {
         this.employees = employees;
+        initializeEmployees();
     }
 
     public void initializeEmployees() {

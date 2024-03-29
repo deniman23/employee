@@ -22,22 +22,18 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        // Инициализация данных
         List<Post> posts = new ArrayList<>();
         List<Employee> employees = new ArrayList<>();
         JsonMapper jsonMapper = new JsonMapper();
 
-        // Создание API и меню
         EmployeeAPI employeeAPI = new EmployeeAPI(new PostDataService(posts),new EmployeeDataService(employees),jsonMapper);
         PostAPI postAPI = new PostAPI(new PostDataService(posts),new EmployeeDataService(employees),jsonMapper);
 
-        // Создание меню
         EmployeeMenu employeeMenu = new EmployeeMenu(employeeAPI, new PostMenu(postAPI, null));
         PostMenu postMenu = new PostMenu(postAPI, new EmployeeMenu(employeeAPI, null));
         employeeAPI.setEmployeeMenu(employeeMenu);
         postAPI.setPostMenu(postMenu);
 
-        // Запуск приложения
         employeeMenu.menuEmployee();
     }
 }

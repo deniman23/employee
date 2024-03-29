@@ -10,6 +10,7 @@ public class PostDataService {
 
     public PostDataService(List<Post> posts) {
         this.posts = posts;
+        initializePosts();
     }
 
     public Optional<Post> createPost(int id, String postName) {
