@@ -1,46 +1,43 @@
 package org.example;
 
-import org.example.api.EmployeeAPI;
-import org.example.api.JSON;
-import org.example.api.PostAPI;
-import org.example.entity.Employee;
-import org.example.entity.Post;
+import org.example.dao.model.Employee;
+import org.example.dao.model.Post;
+import org.example.dao.repository.EmployeeDataService;
+import org.example.dao.repository.PostDataService;
 import org.example.menu.EmployeeMenu;
 import org.example.menu.PostMenu;
-import org.example.service.DataService;
+import org.example.service.api.EmployeeAPI;
+import org.example.service.api.PostAPI;
+import org.example.service.mapper.JsonMapper;
 
 
 import java.util.*;
 
 
 public class Main {
-    private final EmployeeMenu employeeMenu;
+    private EmployeeMenu employeeMenu;
 
     public Main(EmployeeMenu employeeMenu) {
         this.employeeMenu = employeeMenu;
     }
 
     public static void main(String[] args) {
-        Map<Integer, Post> posts = new HashMap<>();
+        // Инициализация данных
+        List<Post> posts = new ArrayList<>();
         List<Employee> employees = new ArrayList<>();
-        JSON json = new JSON();
-        DataService dataService = new DataService(posts, employees);
+        JsonMapper jsonMapper = new JsonMapper();
 
-        EmployeeMenu employeeMenu = new EmployeeMenu(null, null);
-        PostAPI postAPI = new PostAPI(dataService, json);
-        EmployeeAPI employeeAPI = new EmployeeAPI(dataService, employeeMenu, json);
+        // Создание API и меню
+        EmployeeAPI employeeAPI = new EmployeeAPI(new PostDataService(posts),new EmployeeDataService(employees),jsonMapper);
+        PostAPI postAPI = new PostAPI(new PostDataService(posts),new EmployeeDataService(employees),jsonMapper);
 
-        employeeMenu.setEmployeeAPI(employeeAPI);
-        PostMenu postMenu = new PostMenu(postAPI, employeeMenu);
-        employeeMenu.setPostMenu(postMenu);
+        // Создание меню
+        EmployeeMenu employeeMenu = new EmployeeMenu(employeeAPI, new PostMenu(postAPI, null));
+        PostMenu postMenu = new PostMenu(postAPI, new EmployeeMenu(employeeAPI, null));
+        employeeAPI.setEmployeeMenu(employeeMenu);
+        postAPI.setPostMenu(postMenu);
 
-        DataInitializer initializer = new DataInitializer(dataService);
-        initializer.initialize();
-
-        new Main(employeeMenu).startApplication();
-    }
-
-    private void startApplication() {
+        // Запуск приложения
         employeeMenu.menuEmployee();
     }
 }

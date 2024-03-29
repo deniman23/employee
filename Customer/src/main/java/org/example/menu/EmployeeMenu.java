@@ -1,10 +1,10 @@
 package org.example.menu;
 
-import org.example.api.EmployeeAPI;
+import org.example.service.api.EmployeeAPI;
 
 import java.util.InputMismatchException;
 
-import static org.example.api.JSON.scanner;
+import static org.example.service.mapper.JsonMapper.scanner;
 
 
 public class EmployeeMenu {

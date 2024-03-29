@@ -1,10 +1,11 @@
 package org.example.menu;
 
-import org.example.api.PostAPI;
+
+import org.example.service.api.PostAPI;
 
 import java.util.*;
 
-import static org.example.api.JSON.scanner;
+import static org.example.service.mapper.JsonMapper.scanner;
 
 
 public class PostMenu {
