@@ -18,7 +18,7 @@ public class JSON {
     public static final ObjectMapper objectMapper = new ObjectMapper();
 
     static {
-        objectMapper.registerModule(new JavaTimeModule()); // Регистрация модуля один раз
+        objectMapper.registerModule(new JavaTimeModule());
     }
 
     public String convertPostToJson(Post post) throws JsonProcessingException {
@@ -42,9 +42,6 @@ public class JSON {
         employeeJson.put("modificationDate", employee.getModificationDate().toString());
         employeeJson.put("terminated", employee.getTerminated());
 
-//        Post post = posts.get(employee.getPositionId());
-//        JsonNode postJsonNode = post != null ? objectMapper.readTree(convertPostToJson(post)) : objectMapper.createObjectNode();
-//        employeeJson.set("post", postJsonNode);
         Post post = posts.get(employee.getPositionId());
         String postJson = convertPostToJson(post);
         if (post != null) {

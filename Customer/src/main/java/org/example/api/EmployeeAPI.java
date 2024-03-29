@@ -126,13 +126,13 @@ public class EmployeeAPI {
     //Вывести всех сотрудников отсортированных по Фамилии
     public void outputAllEmployeesSortedByLastName() {
         if (employees.isEmpty()) {
-            System.out.println("Список сотрудников пуст.");
+            System.out.println("The list of employees is empty.");
         } else {
             employees.stream()
+                    .filter(employee -> !employee.getTerminated())
                     .sorted(Comparator.comparing(Employee::getLastName))
                     .forEach(employee -> {
                         try {
-                            // Используем метод convertEmployeeToJson для каждого сотрудника
                             String employeeJsonString = json.convertEmployeeToJson(employee, posts);
                             System.out.println(employeeJsonString);
                         } catch (IOException e) {
@@ -162,6 +162,26 @@ public class EmployeeAPI {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    //Вывести уволенных сотрудников
+    public void outputTerminatedEmployees() {
+        if (employees.isEmpty()) {
+            System.out.println("The list of employees is empty.");
+        } else if (employees.stream().noneMatch(Employee::getTerminated)) {
+            System.out.println("There are no terminated employees.");
+        } else {
+            employees.stream()
+                    .filter(Employee::getTerminated)
+                    .forEach(employee -> {
+                        try {
+                            String employeeJsonString = json.convertEmployeeToJson(employee, posts);
+                            System.out.println(employeeJsonString);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
         }
     }
 

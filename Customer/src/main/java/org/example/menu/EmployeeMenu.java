@@ -7,7 +7,7 @@ import java.util.InputMismatchException;
 import static org.example.api.JSON.scanner;
 
 
-public class EmployeeMenu{
+public class EmployeeMenu {
     private final EmployeeAPI employeeAPI;
     private PostMenu postMenu;
 
@@ -31,8 +31,9 @@ public class EmployeeMenu{
                 System.out.println("3. Terminate employee");
                 System.out.println("4. Output all sorted employees");
                 System.out.println("5. Output one employee");
-                System.out.println("6. Output filtered employees");
-                System.out.println("7. Exit");
+                System.out.println("6. Output terminated employees");
+                System.out.println("7. Output filtered employees");
+                System.out.println("8. Exit");
 
                 int operator = scanner.nextInt();
                 scanner.nextLine();
@@ -57,9 +58,12 @@ public class EmployeeMenu{
                         employeeAPI.outputEmployee();
                         break;
                     case 6:
-                        employeeAPI.outputEmployeesByFilter();
+                        employeeAPI.outputTerminatedEmployees();
                         break;
                     case 7:
+                        employeeAPI.outputEmployeesByFilter();
+                        break;
+                    case 8:
                         isRunning = false;
                         System.out.println("Exiting...");
                         break;

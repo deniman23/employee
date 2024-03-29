@@ -1,7 +1,7 @@
 package org.example.entity;
 
 
-//класс должности
+//Должность
 public class Post {
     private final int id;
     private String postName;

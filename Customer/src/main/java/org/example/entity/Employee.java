@@ -2,7 +2,7 @@ package org.example.entity;
 
 import java.time.LocalDate;
 
-//класс сотрудника
+//Сотрудника
 public class Employee {
 
     private final int id;

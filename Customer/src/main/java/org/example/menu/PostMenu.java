@@ -1,8 +1,6 @@
 package org.example.menu;
 
 import org.example.api.PostAPI;
-import org.example.entity.Employee;
-import org.example.entity.Post;
 
 import java.util.*;
 

@@ -45,7 +45,7 @@ public class PostAPI {
     //Изменение должности вводить в формате json
     public void changePost() {
         System.out.println("Enter ID:");
-        int id = Integer.parseInt(scanner.nextLine()); // Используйте Integer.parseInt для чтения числа
+        int id = Integer.parseInt(scanner.nextLine());
 
         System.out.println("Enter new position name:");
         String postName = scanner.nextLine();
@@ -78,7 +78,6 @@ public class PostAPI {
             System.out.println("Empty");
         } else {
             posts.values().stream()
-                    //.map(json::convertPostToJson)
                     .map(p ->{
                         try {
                             return json.convertPostToJson(p);
