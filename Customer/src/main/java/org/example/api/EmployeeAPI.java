@@ -84,9 +84,7 @@ public class EmployeeAPI {
         int postID = scanner.nextInt();
         scanner.nextLine();
 
-        Post newPosition = posts.get(postID);
-        if (newPosition != null) {
-            employee.setPosition(newPosition);
+        if (posts.get(postID) != null) {
             employee.setPositionId(postID);
         } else {
             System.out.println("Post not found");

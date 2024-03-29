@@ -1,6 +1,7 @@
 package org.example.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -33,7 +34,7 @@ public class JSON {
             return null;
         }
     }
-    public String convertEmployeeToJson(Employee employee, Map<Integer, Post> posts)  {
+    public String convertEmployeeToJson(Employee employee, Map<Integer, Post> posts) {
         ObjectNode employeeJson = objectMapper.createObjectNode();
         employeeJson.put("id", employee.getId());
         employeeJson.put("lastName", employee.getLastName());
@@ -54,11 +55,20 @@ public class JSON {
 
         employeeJson.put("terminated", employee.getTerminated());
 
-        String postJson = convertPostToJson(posts.get(employee.getPositionId()));
-        try {
-            employeeJson.set("post", objectMapper.readTree(postJson));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+// Используем convertPostToJson для добавления информации о должности
+        Post post = posts.get(employee.getPositionId());
+        if (post != null) {
+            try {
+                JsonNode postJsonNode = objectMapper.readTree(convertPostToJson(post));
+                employeeJson.set("post", postJsonNode);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            ObjectNode postJson = objectMapper.createObjectNode();
+            postJson.put("id", "Not found");
+            postJson.put("postName", "Not found");
+            employeeJson.set("post", postJson);
         }
 
         try {

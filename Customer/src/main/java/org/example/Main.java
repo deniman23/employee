@@ -13,22 +13,18 @@ import java.util.*;
 
 
 public class Main {
-    private List<Employee> employees;
-    public Map<Integer, Post> posts;
+    private final List<Employee> employees;
+    private final Map<Integer, Post> posts;
     private EmployeeMenu employeeMenu;
-    private EmployeeAPI employeeAPI;
-    private PostMenu postMenu;
-    private PostAPI postAPI;
-    private JSON json;
 
     public Main() {
         posts = new HashMap<>();
         employees = new ArrayList<>();
-        json = new JSON();
-        postAPI = new PostAPI(posts, employees, json);
-        employeeAPI = new EmployeeAPI(posts, employees, employeeMenu, json);
+        JSON json = new JSON();
+        PostAPI postAPI = new PostAPI(posts, employees, json);
+        EmployeeAPI employeeAPI = new EmployeeAPI(posts, employees, employeeMenu, json);
         employeeMenu = new EmployeeMenu(employeeAPI, null);
-        postMenu = new PostMenu(postAPI, employeeMenu);
+        PostMenu postMenu = new PostMenu(postAPI, employeeMenu);
         employeeMenu.setPostMenu(postMenu);
 
         postInitializer();
