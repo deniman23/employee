@@ -3,6 +3,7 @@ package org.example.api;
 import org.example.entity.Employee;
 import org.example.entity.Post;
 import org.example.menu.EmployeeMenu;
+import org.example.service.DataService;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -15,21 +16,19 @@ import static org.example.api.JSON.*;
 
 public class EmployeeAPI {
 
-    private final Map<Integer, Post> posts;
-    private final List<Employee> employees;
+    private final DataService dataService;
     private final EmployeeMenu employeeMenu;
     private final JSON json;
 
-    public EmployeeAPI(Map<Integer, Post> posts, List<Employee> employees, EmployeeMenu employeeMenu, JSON json) {
-        this.posts = posts;
-        this.employees = employees;
+    public EmployeeAPI(DataService dataService, EmployeeMenu employeeMenu, JSON json) {
+        this.dataService = dataService;
         this.employeeMenu = employeeMenu;
         this.json = json;
     }
 
     //Создание сотрудника
     public void createEmployee() {
-        int employeeID = employees.size() + 1;
+        int employeeID = dataService.getEmployees().size() + 1;
         System.out.println("Enter lastName");
         String lastName = scanner.nextLine();
 
@@ -43,12 +42,12 @@ public class EmployeeAPI {
         int postID = scanner.nextInt();
         scanner.nextLine();
 
-        Post post = posts.get(postID);
+        Post post = dataService.getPosts().get(postID);
         if (post == null) {
             System.out.println("Position not found");
         } else {
             Employee newEmployee = new Employee(employeeID, lastName, firstName, middleName, postID);
-            employees.add(newEmployee);
+            dataService.getEmployees().add(newEmployee);
             System.out.println("Success, id: " + newEmployee.getId());
         }
     }
@@ -59,7 +58,7 @@ public class EmployeeAPI {
         int id = scanner.nextInt();
         scanner.nextLine();
 
-        Employee employee = employees.stream()
+        Employee employee = dataService.getEmployees().stream()
                 .filter(e -> e.getId() == id)
                 .findFirst()
                 .orElse(null);
@@ -82,7 +81,7 @@ public class EmployeeAPI {
         int postID = scanner.nextInt();
         scanner.nextLine();
 
-        if (posts.get(postID) != null) {
+        if (dataService.getPosts().get(postID) != null) {
             employee.setPositionId(postID);
         } else {
             System.out.println("Post not found");
@@ -103,7 +102,7 @@ public class EmployeeAPI {
         int id = scanner.nextInt();
         scanner.nextLine();
 
-        Employee employee = employees.stream()
+        Employee employee = dataService.getEmployees().stream()
                 .filter(e -> e.getId() == id)
                 .findFirst()
                 .orElse(null);
@@ -125,15 +124,15 @@ public class EmployeeAPI {
 
     //Вывести всех сотрудников отсортированных по Фамилии
     public void outputAllEmployeesSortedByLastName() {
-        if (employees.isEmpty()) {
+        if (dataService.getEmployees().isEmpty()) {
             System.out.println("The list of employees is empty.");
         } else {
-            employees.stream()
+            dataService.getEmployees().stream()
                     .filter(employee -> !employee.getTerminated())
                     .sorted(Comparator.comparing(Employee::getLastName))
                     .forEach(employee -> {
                         try {
-                            String employeeJsonString = json.convertEmployeeToJson(employee, posts);
+                            String employeeJsonString = json.convertEmployeeToJson(employee, dataService.getPosts());
                             System.out.println(employeeJsonString);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -148,7 +147,7 @@ public class EmployeeAPI {
         int id = scanner.nextInt();
         scanner.nextLine();
 
-        Employee employee = employees.stream()
+        Employee employee = dataService.getEmployees().stream()
                 .filter(e -> e.getId() == id)
                 .findFirst()
                 .orElse(null);
@@ -157,7 +156,7 @@ public class EmployeeAPI {
             System.out.println("Employee with the given ID was not found.");
         } else {
             try {
-                String employeeJsonString = json.convertEmployeeToJson(employee, posts);
+                String employeeJsonString = json.convertEmployeeToJson(employee, dataService.getPosts());
                 System.out.println(employeeJsonString);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -167,16 +166,16 @@ public class EmployeeAPI {
 
     //Вывести уволенных сотрудников
     public void outputTerminatedEmployees() {
-        if (employees.isEmpty()) {
+        if (dataService.getEmployees().isEmpty()) {
             System.out.println("The list of employees is empty.");
-        } else if (employees.stream().noneMatch(Employee::getTerminated)) {
+        } else if (dataService.getEmployees().stream().noneMatch(Employee::getTerminated)) {
             System.out.println("There are no terminated employees.");
         } else {
-            employees.stream()
+            dataService.getEmployees().stream()
                     .filter(Employee::getTerminated)
                     .forEach(employee -> {
                         try {
-                            String employeeJsonString = json.convertEmployeeToJson(employee, posts);
+                            String employeeJsonString = json.convertEmployeeToJson(employee, dataService.getPosts());
                             System.out.println(employeeJsonString);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -215,7 +214,7 @@ public class EmployeeAPI {
 
     //Поиск по занимаемой должности
     public void searchEmployeesByPost() {
-        Set<String> positions = posts.values().stream()
+        Set<String> positions = dataService.getPosts().values().stream()
                 .map(Post::getPostName)
                 .collect(Collectors.toSet());
         System.out.println("Enter position name:");
@@ -223,9 +222,9 @@ public class EmployeeAPI {
         scanner.nextLine();
         String postToFind = scanner.nextLine();
 
-        List<Employee> employeesWithPosition = employees.stream()
-                .filter(e -> e.getPositionId() != 0 && posts.containsKey(e.getPositionId()))
-                .filter(e -> posts.get(e.getPositionId()).getPostName().equals(postToFind))
+        List<Employee> employeesWithPosition = dataService.getEmployees().stream()
+                .filter(e -> e.getPositionId() != 0 && dataService.getPosts().containsKey(e.getPositionId()))
+                .filter(e -> dataService.getPosts().get(e.getPositionId()).getPostName().equals(postToFind))
                 .collect(Collectors.toList());
 
         if (employeesWithPosition.isEmpty()) {
@@ -234,7 +233,7 @@ public class EmployeeAPI {
             employeesWithPosition.stream()
                     .map(e -> {
                         try {
-                            return json.convertEmployeeToJson(e, this.posts);
+                            return json.convertEmployeeToJson(e, this.dataService.getPosts());
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -249,13 +248,13 @@ public class EmployeeAPI {
         scanner.nextLine(); // Очистка буфера сканера
         String search = scanner.nextLine();
 
-        employees.stream()
+        dataService.getEmployees().stream()
                 .filter(e -> e.getLastName().toLowerCase().contains(search.toLowerCase()) ||
                         e.getFirstName().toLowerCase().contains(search.toLowerCase()) ||
                         e.getMiddleName().toLowerCase().contains(search.toLowerCase()))
                 .map(e -> {
                     try {
-                        return json.convertEmployeeToJson(e, this.posts);
+                        return json.convertEmployeeToJson(e, this.dataService.getPosts());
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
@@ -275,12 +274,12 @@ public class EmployeeAPI {
             String endDateInput = scanner.nextLine();
             LocalDate endDate = LocalDate.parse(endDateInput);
 
-            employees.stream()
+            dataService.getEmployees().stream()
                     .filter(e -> (e.getCreationDate().isEqual(startDate) || e.getCreationDate().isAfter(startDate)) &&
                             (e.getCreationDate().isEqual(endDate) || e.getCreationDate().isBefore(endDate)))
                     .map(e -> {
                         try {
-                            return json.convertEmployeeToJson(e, this.posts);
+                            return json.convertEmployeeToJson(e, this.dataService.getPosts());
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }

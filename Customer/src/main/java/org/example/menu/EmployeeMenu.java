@@ -8,7 +8,7 @@ import static org.example.api.JSON.scanner;
 
 
 public class EmployeeMenu {
-    private final EmployeeAPI employeeAPI;
+    private EmployeeAPI employeeAPI;
     private PostMenu postMenu;
 
     public EmployeeMenu(EmployeeAPI employeeAPI, PostMenu postMenu) {
@@ -19,6 +19,11 @@ public class EmployeeMenu {
     public void setPostMenu(PostMenu postMenu) {
         this.postMenu = postMenu;
     }
+
+    public void setEmployeeAPI(EmployeeAPI employeeAPI) {
+        this.employeeAPI = employeeAPI;
+    }
+
 
     public void menuEmployee() {
         boolean isRunning = true;

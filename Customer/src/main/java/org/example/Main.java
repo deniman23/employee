@@ -7,46 +7,40 @@ import org.example.entity.Employee;
 import org.example.entity.Post;
 import org.example.menu.EmployeeMenu;
 import org.example.menu.PostMenu;
+import org.example.service.DataService;
 
 
 import java.util.*;
 
 
 public class Main {
-    private final List<Employee> employees;
-    private final Map<Integer, Post> posts;
-    private EmployeeMenu employeeMenu;
+    private final EmployeeMenu employeeMenu;
 
-    public Main() {
-        posts = new HashMap<>();
-        employees = new ArrayList<>();
-        JSON json = new JSON();
-        PostAPI postAPI = new PostAPI(posts, employees, json);
-        EmployeeAPI employeeAPI = new EmployeeAPI(posts, employees, employeeMenu, json);
-        employeeMenu = new EmployeeMenu(employeeAPI, null);
-        PostMenu postMenu = new PostMenu(postAPI, employeeMenu);
-        employeeMenu.setPostMenu(postMenu);
-
-        postInitializer();
-        employeeInitializer();
-
-        employeeMenu.menuEmployee();
+    public Main(EmployeeMenu employeeMenu) {
+        this.employeeMenu = employeeMenu;
     }
 
     public static void main(String[] args) {
+        Map<Integer, Post> posts = new HashMap<>();
+        List<Employee> employees = new ArrayList<>();
+        JSON json = new JSON();
+        DataService dataService = new DataService(posts, employees);
 
-        new Main();
+        EmployeeMenu employeeMenu = new EmployeeMenu(null, null);
+        PostAPI postAPI = new PostAPI(dataService, json);
+        EmployeeAPI employeeAPI = new EmployeeAPI(dataService, employeeMenu, json);
+
+        employeeMenu.setEmployeeAPI(employeeAPI);
+        PostMenu postMenu = new PostMenu(postAPI, employeeMenu);
+        employeeMenu.setPostMenu(postMenu);
+
+        DataInitializer initializer = new DataInitializer(dataService);
+        initializer.initialize();
+
+        new Main(employeeMenu).startApplication();
     }
 
-    private void postInitializer() {
-        posts.put(1, new Post(1, "dev"));
-        posts.put(2, new Post(2, "ceo"));
-        posts.put(3, new Post(3, "qa"));
-    }
-
-    private void employeeInitializer() {
-        employees.add(new Employee(1, "Ivanov", "Ivan", "Ivanovich", 1));
-        employees.add(new Employee(2, "Alexeev", "Alex", "Alexevich", 2));
-        employees.add(new Employee(3, "Vitaliev", "Vitaly", "Vitalievich", 3));
+    private void startApplication() {
+        employeeMenu.menuEmployee();
     }
 }

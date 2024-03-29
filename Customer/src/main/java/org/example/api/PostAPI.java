@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.example.entity.Employee;
 import org.example.entity.Post;
+import org.example.service.DataService;
 
 import java.io.IOException;
 import java.util.*;
@@ -14,35 +15,34 @@ import static org.example.api.JSON.scanner;
 
 
 public class PostAPI {
-    private final Map<Integer, Post> posts;
-    private final List<Employee> employees;
+    private DataService dataService;
     private final JSON json;
-    public PostAPI(Map<Integer, Post> posts, List<Employee> employees, JSON json) {
-        this.posts = posts;
-        this.employees = employees;
+
+    public PostAPI(DataService dataService, JSON json) {
+        this.dataService = dataService;
         this.json = json;
     }
 
 
-    //Создание должности
+    // Создание должности
     public void createPost() {
-        int postID = posts.size() + 1;
+        int postID = dataService.getPosts().size() + 1;
         System.out.println("Enter Name");
         String postName = scanner.nextLine();
 
-        if (posts.containsKey(postID)) {
+        if (dataService.getPosts().containsKey(postID)) {
             System.out.println("Invalid id");
 
-        } else if (posts.values().stream().anyMatch(post -> post.getPostName().equalsIgnoreCase(postName))) {
+        } else if (dataService.getPosts().values().stream().anyMatch(post -> post.getPostName().equalsIgnoreCase(postName))) {
             System.out.println("Invalid name");
 
         } else {
-            posts.put(postID, new Post(postID, postName.toLowerCase()));
+            dataService.getPosts().put(postID, new Post(postID, postName.toLowerCase()));
             System.out.println("Success, id: " + postID);
         }
     }
 
-    //Изменение должности вводить в формате json
+    // Изменение должности вводить в формате json
     public void changePost() {
         System.out.println("Enter ID:");
         int id = Integer.parseInt(scanner.nextLine());
@@ -50,7 +50,7 @@ public class PostAPI {
         System.out.println("Enter new position name:");
         String postName = scanner.nextLine();
 
-        Post post = posts.get(id);
+        Post post = dataService.getPosts().get(id);
         if (post != null) {
             post.setPostName(postName);
             System.out.println("Post updated successfully");
@@ -59,29 +59,29 @@ public class PostAPI {
         }
     }
 
-    //Удаление должности по ID
+    // Удаление должности по ID
     public void deletePost() {
         outputAllPosts();
         System.out.println("Enter ID");
         int id = scanner.nextInt();
 
-        if (posts.containsKey(id)) {
-            posts.remove(id);
+        if (dataService.getPosts().containsKey(id)) {
+            dataService.getPosts().remove(id);
             System.out.println("Success");
         } else
             System.out.println("Error");
     }
 
-    //Вывод всех должностей с индексом
+    // Вывод всех должностей с индексом
     public void outputAllPosts() {
-        if (posts.isEmpty()) {
+        if (dataService.getPosts().isEmpty()) {
             System.out.println("Empty");
         } else {
-            posts.values().stream()
-                    .map(p ->{
+            dataService.getPosts().values().stream()
+                    .map(p -> {
                         try {
                             return json.convertPostToJson(p);
-                        }catch (IOException ex){
+                        } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
                     })
@@ -89,25 +89,25 @@ public class PostAPI {
         }
     }
 
-    //Вывод одной должности
+    // Вывод одной должности
     public void outputPost() throws JsonProcessingException {
         System.out.println("Enter ID");
         int id = scanner.nextInt();
         scanner.nextLine();
-        Post post = posts.get(id);
+        Post post = dataService.getPosts().get(id);
         String postJson = json.convertPostToJson(post);
         System.out.println(postJson);
     }
 
-    //Вывод должностей с фамилиями сотрудников
+    // Вывод должностей с фамилиями сотрудников
     public void outputPostsWithEmployees() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        for (Map.Entry<Integer, Post> postEntry : posts.entrySet()) {
+        for (Map.Entry<Integer, Post> postEntry : dataService.getPosts().entrySet()) {
             String postJsonString = json.convertPostToJson(postEntry.getValue());
             try {
                 ObjectNode postObject = (ObjectNode) mapper.readTree(postJsonString);
                 ArrayNode employeesLastNamesArray = mapper.createArrayNode();
-                employees.stream()
+                dataService.getEmployees().stream()
                         .filter(employee -> employee.getPositionId() == postEntry.getKey())
                         .sorted(Comparator.comparing(Employee::getLastName))
                         .forEach(employee -> employeesLastNamesArray.add(employee.getLastName()));
