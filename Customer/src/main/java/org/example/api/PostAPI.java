@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.example.entity.Employee;
 import org.example.entity.Post;
 
+import java.io.IOException;
 import java.util.*;
 
 import static org.example.api.JSON.scanner;
@@ -77,13 +78,20 @@ public class PostAPI {
             System.out.println("Empty");
         } else {
             posts.values().stream()
-                    .map(json::convertPostToJson)
+                    //.map(json::convertPostToJson)
+                    .map(p ->{
+                        try {
+                            return json.convertPostToJson(p);
+                        }catch (IOException ex){
+                            throw new RuntimeException(ex);
+                        }
+                    })
                     .forEach(System.out::println);
         }
     }
 
     //Вывод одной должности
-    public void outputPost() {
+    public void outputPost() throws JsonProcessingException {
         System.out.println("Enter ID");
         int id = scanner.nextInt();
         scanner.nextLine();
@@ -93,7 +101,7 @@ public class PostAPI {
     }
 
     //Вывод должностей с фамилиями сотрудников
-    public void outputPostsWithEmployees() {
+    public void outputPostsWithEmployees() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         for (Map.Entry<Integer, Post> postEntry : posts.entrySet()) {
             String postJsonString = json.convertPostToJson(postEntry.getValue());
@@ -104,7 +112,7 @@ public class PostAPI {
                         .filter(employee -> employee.getPositionId() == postEntry.getKey())
                         .sorted(Comparator.comparing(Employee::getLastName))
                         .forEach(employee -> employeesLastNamesArray.add(employee.getLastName()));
-                postObject.set("EmployeesLastNames", employeesLastNamesArray);
+                postObject.set("lastName", employeesLastNamesArray);
                 System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(postObject));
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
