@@ -13,6 +13,9 @@ import org.example.service.mapper.JsonMapper;
 
 import java.util.*;
 
+////        employees.add(1,"Ivanov", "Ivan", "Ivanovich",1);
+////        employees.add(2, "Alexeev", "Alex", "Alexevich", 2);
+////        employees.add(3, "Vitaliev", "Vitaly", "Vitalievich", 3);
 
 public class Main {
     private EmployeeMenu employeeMenu;
@@ -26,13 +29,24 @@ public class Main {
         List<Employee> employees = new ArrayList<>();
         JsonMapper jsonMapper = new JsonMapper();
 
-        EmployeeAPI employeeAPI = new EmployeeAPI(new PostDataService(posts),new EmployeeDataService(employees),jsonMapper);
-        PostAPI postAPI = new PostAPI(new PostDataService(posts),new EmployeeDataService(employees),jsonMapper);
+        PostDataService postDataService = new PostDataService(posts);
+        EmployeeDataService employeeDataService = new EmployeeDataService(employees);
 
-        EmployeeMenu employeeMenu = new EmployeeMenu(employeeAPI, new PostMenu(postAPI, null));
-        PostMenu postMenu = new PostMenu(postAPI, new EmployeeMenu(employeeAPI, null));
-        employeeAPI.setEmployeeMenu(employeeMenu);
-        postAPI.setPostMenu(postMenu);
+        EmployeeAPI employeeAPI = new EmployeeAPI(postDataService, employeeDataService, jsonMapper);
+        PostAPI postAPI = new PostAPI(postDataService, employeeDataService, jsonMapper);
+
+        EmployeeMenu employeeMenu = new EmployeeMenu(employeeAPI, null);
+        PostMenu postMenu = new PostMenu(postAPI, employeeMenu);
+
+        employeeMenu.setPostMenu(postMenu);
+
+        postDataService.addPost(new Post(1, "dev"));
+        postDataService.addPost(new Post(2, "ceo"));
+        postDataService.addPost(new Post(3, "qa"));
+
+        employeeDataService.addEmployee(new Employee(1, "Ivanov", "Ivan", "Ivanovich", 1));
+        employeeDataService.addEmployee(new Employee(2, "Alexeev", "Alex", "Alexevich", 2));
+        employeeDataService.addEmployee(new Employee(3, "Vitaliev", "Vitaly", "Vitalievich", 3));
 
         employeeMenu.menuEmployee();
     }

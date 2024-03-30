@@ -1,6 +1,7 @@
 package org.example.service.api;
 
 import org.example.dao.model.Employee;
+import org.example.dao.model.Post;
 import org.example.dao.repository.EmployeeDataService;
 import org.example.dao.repository.PostDataService;
 import org.example.menu.EmployeeMenu;
@@ -26,9 +27,6 @@ public class EmployeeAPI {
         this.postDataService = postDataService;
         this.employeeDataService = employeeDataService;
         this.jsonMapper = jsonMapper;
-    }
-    public void setEmployeeMenu(EmployeeMenu employeeMenu) {
-        this.employeeMenu = employeeMenu;
     }
 
     //Создание сотрудника
@@ -83,8 +81,8 @@ public class EmployeeAPI {
         int postID = scanner.nextInt();
         scanner.nextLine();
 
-        if (employeeDataService.getEmployees().get(id).getPosition() != null) {
-            employee.setPositionId(postID);
+        if (employeeDataService.getEmployees().get(id).getPost() != null) {
+            employee.setPostID(postID);
         } else {
             System.out.println("Post not found");
         }
@@ -120,18 +118,19 @@ public class EmployeeAPI {
 
     //Вывести всех сотрудников отсортированных по Фамилии
     public void outputAllEmployeesSortedByLastName() {
-        if (employeeDataService.getEmployees().isEmpty()) {
+        List<Employee> employees = employeeDataService.getEmployees();
+        List<Post> posts = postDataService.getPosts();
+        if (employees.isEmpty()) {
             System.out.println("The list of employees is empty.");
         } else {
-            employeeDataService.getEmployees().stream()
+            employees.stream()
                     .filter(employee -> !employee.getTerminated())
                     .sorted(Comparator.comparing(Employee::getLastName))
                     .forEach(employee -> {
                         try {
-                            String employeeJsonString = jsonMapper.convertEmployeeToJson(employee, postDataService.getPosts());
-                            System.out.println(employeeJsonString);
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                            System.out.println(jsonMapper.convertEmployeeToJson(employee, posts));
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
                         }
                     });
         }
@@ -189,7 +188,7 @@ public class EmployeeAPI {
         System.out.println("4. Exit");
 
         int operator = scanner.nextInt();
-        scanner.nextLine(); // Очистка буфера сканера
+        scanner.nextLine();
         switch (operator) {
             case 1:
                 searchEmployeesByPartialMatch();
@@ -210,11 +209,11 @@ public class EmployeeAPI {
 
     public void searchEmployeesByPost() {
         System.out.println("Enter position ID:");
-        int positionId = scanner.nextInt();
-        scanner.nextLine(); // Очистка буфера сканера
+        int postID = scanner.nextInt();
+        scanner.nextLine();
 
         List<Employee> employeesWithPosition = employeeDataService.getEmployees().stream()
-                .filter(e -> e.getPositionId() == positionId)
+                .filter(e -> e.getPostID() == postID)
                 .collect(Collectors.toList());
 
         if (employeesWithPosition.isEmpty()) {

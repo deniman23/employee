@@ -11,28 +11,28 @@ public class Employee {
     private String lastName;
     private String firstName;
     private String middleName;
-    private int positionId;
-    private Post position;
+    private int postID;
+    private Post post;
     private boolean isTerminated;
 
-    public Employee(int id, String lastName, String firstName, String middleName, int positionId) {
+    public Employee(int id, String lastName, String firstName, String middleName, int postID) {
         this.id = id;
         this.creationDate = LocalDate.now();
         this.modificationDate = LocalDate.now();
         this.lastName = lastName;
         this.firstName = firstName;
         this.middleName = middleName;
-        this.positionId = positionId;
+        this.postID = postID;
         this.isTerminated = false;
     }
 
 
-    public void setPositionId(int positionId) {
-        this.positionId = positionId;
+    public void setPostID(int postID) {
+        this.postID = postID;
     }
 
-    public int getPositionId() {
-        return positionId;
+    public int getPostID() {
+        return postID;
     }
 
     public LocalDate getModificationDate() {
@@ -79,12 +79,12 @@ public class Employee {
         this.middleName = middleName;
     }
 
-    public Post getPosition() {
-        return position;
+    public Post getPost() {
+        return post;
     }
 
-    public void setPosition(Post position) {
-        this.position = position;
+    public void setPost(Post post) {
+        this.post = post;
     }
 
     public LocalDate getCreationDate() {

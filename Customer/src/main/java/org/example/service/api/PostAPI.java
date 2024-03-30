@@ -80,7 +80,7 @@ public class PostAPI {
     public void outputAllPosts() {
         List<Post> posts = postDataService.getPosts();
         if (posts.isEmpty()) {
-            System.out.println("Empty");
+            System.out.println("The list of positions is empty.");
         } else {
             posts.forEach(post -> {
                 try {
@@ -123,7 +123,7 @@ public class PostAPI {
                 ObjectNode postObject = (ObjectNode) mapper.readTree(postJsonString);
                 ArrayNode employeesLastNamesArray = mapper.createArrayNode();
                 employeeDataService.getEmployees().stream()
-                        .filter(employee -> employee.getPositionId() == post.getId())
+                        .filter(employee -> employee.getPostID() == post.getId())
                         .sorted(Comparator.comparing(Employee::getLastName))
                         .forEach(employee -> employeesLastNamesArray.add(employee.getLastName()));
                 postObject.set("lastName", employeesLastNamesArray);

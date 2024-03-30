@@ -8,26 +8,19 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 public class EmployeeDataService {
-    private final List<Employee> employees;
+    private List<Employee> employees;
 
     public EmployeeDataService(List<Employee> employees) {
         this.employees = employees;
-        initializeEmployees();
     }
 
-    public void initializeEmployees() {
-        employees.add(new Employee(1, "Ivanov", "Ivan", "Ivanovich", 1));
-        employees.add(new Employee(2, "Alexeev", "Alex", "Alexevich", 2));
-        employees.add(new Employee(3, "Vitaliev", "Vitaly", "Vitalievich", 3));
-
-    }
 
     public Optional<Employee> createEmployee(int id, String lastName, String firstName, String middleName, int positionId) {
         if (employees.stream().anyMatch(e -> e.getId() == id)) {
             return Optional.empty();
         }
         Employee newEmployee = new Employee(id, lastName, firstName, middleName, positionId);
-        employees.add(newEmployee);
+        addEmployee(newEmployee);
         return Optional.of(newEmployee);
     }
 
@@ -46,7 +39,7 @@ public class EmployeeDataService {
         employee.setLastName(lastName);
         employee.setFirstName(firstName);
         employee.setMiddleName(middleName);
-        employee.setPositionId(positionId);
+        employee.setPostID(positionId);
         return Optional.of(employee);
     }
 

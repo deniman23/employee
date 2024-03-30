@@ -6,11 +6,10 @@ import java.util.List;
 import java.util.Optional;
 
 public class PostDataService {
-    private final List<Post> posts;
+    private List<Post> posts;
 
     public PostDataService(List<Post> posts) {
         this.posts = posts;
-        initializePosts();
     }
 
     public Optional<Post> createPost(int id, String postName) {
@@ -20,12 +19,6 @@ public class PostDataService {
         Post newPost = new Post(id, postName);
         posts.add(newPost);
         return Optional.of(newPost);
-    }
-
-    public void initializePosts() {
-        posts.add(new Post(1, "dev"));
-        posts.add(new Post(2, "ceo"));
-        posts.add(new Post(3, "qa"));
     }
 
     public List<Post> getPosts() {
