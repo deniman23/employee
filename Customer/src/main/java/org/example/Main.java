@@ -13,9 +13,6 @@ import org.example.service.mapper.JsonMapper;
 
 import java.util.*;
 
-////        employees.add(1,"Ivanov", "Ivan", "Ivanovich",1);
-////        employees.add(2, "Alexeev", "Alex", "Alexevich", 2);
-////        employees.add(3, "Vitaliev", "Vitaly", "Vitalievich", 3);
 
 public class Main {
     private EmployeeMenu employeeMenu;
@@ -40,13 +37,13 @@ public class Main {
 
         employeeMenu.setPostMenu(postMenu);
 
-        postDataService.addPost(new Post(0, "dev"));
-        postDataService.addPost(new Post(1, "ceo"));
-        postDataService.addPost(new Post(2, "qa"));
+        postDataService.addPost(new Post(1, "dev"));
+        postDataService.addPost(new Post(2, "ceo"));
+        postDataService.addPost(new Post(3, "qa"));
 
-        employeeDataService.addEmployee(new Employee(0, "Ivanov", "Ivan", "Ivanovich", 0));
-        employeeDataService.addEmployee(new Employee(1, "Alexeev", "Alex", "Alexevich", 1));
-        employeeDataService.addEmployee(new Employee(2, "Vitaliev", "Vitaly", "Vitalievich", 2));
+        employeeDataService.addEmployee(new Employee(1, "Ivanov", "Ivan", "Ivanovich", 1));
+        employeeDataService.addEmployee(new Employee(2, "Alexeev", "Alex", "Alexevich", 2));
+        employeeDataService.addEmployee(new Employee(3, "Vitaliev", "Vitaly", "Vitalievich", 3));
 
         employeeMenu.menuEmployee();
     }

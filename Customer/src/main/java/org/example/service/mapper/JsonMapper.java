@@ -42,9 +42,10 @@ public class JsonMapper {
         employeeJson.put("modificationDate", employee.getModificationDate().toString());
         employeeJson.put("terminated", employee.getTerminated());
 
-        Post post = posts.get(employee.getPostID());
-        String postJson = convertPostToJson(post);
-        if (post != null) {
+        int postIndex = employee.getPostID() - 1;
+        if (postIndex >= 0 && postIndex < posts.size()) {
+            Post post = posts.get(postIndex);
+            String postJson = convertPostToJson(post);
             JsonNode postJsonNode = objectMapper.readTree(postJson);
             employeeJson.set("post", postJsonNode);
         } else {
@@ -52,5 +53,4 @@ public class JsonMapper {
         }
 
         return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(employeeJson);
-    }
-}
+    }}
