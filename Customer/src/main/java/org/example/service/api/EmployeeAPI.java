@@ -44,7 +44,7 @@ public class EmployeeAPI {
         int postID = scanner.nextInt();
         scanner.nextLine();
 
-        Optional<Employee> createdEmployee = employeeDataService.createEmployee(employeeDataService.getEmployees().size() + 1, lastName, firstName, middleName, postID);
+        Optional<Employee> createdEmployee = employeeDataService.createEmployee(employeeDataService.getEmployees().size(), lastName, firstName, middleName, postID);
         if (createdEmployee.isPresent()) {
             System.out.println("Success, id: " + createdEmployee.get().getId());
         } else {

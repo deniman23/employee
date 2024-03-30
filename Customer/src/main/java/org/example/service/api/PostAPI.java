@@ -38,7 +38,7 @@ public class PostAPI {
         System.out.println("Enter Name");
         String postName = scanner.nextLine();
 
-        Optional<Post> createdPost = postDataService.createPost(postDataService.getPosts().size() + 1, postName.toLowerCase());
+        Optional<Post> createdPost = postDataService.createPost(postDataService.getPosts().size(), postName.toLowerCase());
         if (createdPost.isPresent()) {
             System.out.println("Success, id: " + createdPost.get().getId());
         } else {
