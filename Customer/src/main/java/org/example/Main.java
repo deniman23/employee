@@ -15,12 +15,6 @@ import java.util.*;
 
 
 public class Main {
-    private EmployeeMenu employeeMenu;
-
-    public Main(EmployeeMenu employeeMenu) {
-        this.employeeMenu = employeeMenu;
-    }
-
     public static void main(String[] args) {
         List<Post> posts = new ArrayList<>();
         List<Employee> employees = new ArrayList<>();
@@ -29,13 +23,12 @@ public class Main {
         PostDataService postDataService = new PostDataService(posts);
         EmployeeDataService employeeDataService = new EmployeeDataService(employees);
 
-        EmployeeAPI employeeAPI = new EmployeeAPI(postDataService, employeeDataService, jsonMapper);
         PostAPI postAPI = new PostAPI(postDataService, employeeDataService, jsonMapper);
-
-        EmployeeMenu employeeMenu = new EmployeeMenu(employeeAPI, null);
+        EmployeeMenu employeeMenu = new EmployeeMenu(null, null);
         PostMenu postMenu = new PostMenu(postAPI, employeeMenu);
 
-        employeeMenu.setPostMenu(postMenu);
+        employeeMenu.setPostMenu(postMenu); // Устанавливаем PostMenu в EmployeeMenu
+        employeeMenu.setEmployeeAPI(new EmployeeAPI(postDataService, employeeDataService, jsonMapper, employeeMenu));
 
         postDataService.addPost(new Post(1, "dev"));
         postDataService.addPost(new Post(2, "ceo"));

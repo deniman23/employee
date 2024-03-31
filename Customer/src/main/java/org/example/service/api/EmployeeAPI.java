@@ -21,12 +21,13 @@ public class EmployeeAPI {
     private final PostDataService postDataService;
     private final EmployeeDataService employeeDataService;
     private final JsonMapper jsonMapper;
-    private EmployeeMenu employeeMenu;
+    private final EmployeeMenu employeeMenu;
 
-    public EmployeeAPI(PostDataService postDataService, EmployeeDataService employeeDataService, JsonMapper jsonMapper) {
+    public EmployeeAPI(PostDataService postDataService, EmployeeDataService employeeDataService, JsonMapper jsonMapper, EmployeeMenu employeeMenu) {
         this.postDataService = postDataService;
         this.employeeDataService = employeeDataService;
         this.jsonMapper = jsonMapper;
+        this.employeeMenu = employeeMenu;
     }
 
     //Создание сотрудника

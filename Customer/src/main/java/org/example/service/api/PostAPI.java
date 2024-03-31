@@ -8,7 +8,6 @@ import org.example.dao.model.Employee;
 import org.example.dao.model.Post;
 import org.example.dao.repository.EmployeeDataService;
 import org.example.dao.repository.PostDataService;
-import org.example.service.console.PostMenu;
 import org.example.service.mapper.JsonMapper;
 
 import java.io.IOException;
@@ -21,7 +20,6 @@ public class PostAPI {
     private final PostDataService postDataService;
     private final EmployeeDataService employeeDataService;
     private final JsonMapper jsonMapper;
-    private PostMenu postMenu;
 
     public PostAPI(PostDataService postDataService, EmployeeDataService employeeDataService, JsonMapper jsonMapper) {
         this.postDataService = postDataService;
@@ -29,9 +27,6 @@ public class PostAPI {
         this.jsonMapper = jsonMapper;
     }
 
-    public void setPostMenu(PostMenu postMenu){
-        this.postMenu = postMenu;
-    }
 
     // Создание должности
     public void createPost() {
@@ -116,21 +111,25 @@ public class PostAPI {
 
     // Вывод должностей с фамилиями сотрудников
     public void outputPostsWithEmployees() {
-        ObjectMapper mapper = new ObjectMapper();
-        postDataService.getPosts().forEach(post -> {
-            try {
-                String postJsonString = jsonMapper.convertPostToJson(post);
-                ObjectNode postObject = (ObjectNode) mapper.readTree(postJsonString);
-                ArrayNode employeesLastNamesArray = mapper.createArrayNode();
-                employeeDataService.getEmployees().stream()
-                        .filter(employee -> employee.getPostID() == post.getId())
-                        .sorted(Comparator.comparing(Employee::getLastName))
-                        .forEach(employee -> employeesLastNamesArray.add(employee.getLastName()));
-                postObject.set("lastName", employeesLastNamesArray);
-                System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(postObject));
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-        });
+        if (postDataService.getPosts().isEmpty()) {
+            System.out.println("The list of positions is empty.");
+        } else {
+            ObjectMapper mapper = new ObjectMapper();
+            postDataService.getPosts().forEach(post -> {
+                try {
+                    String postJsonString = jsonMapper.convertPostToJson(post);
+                    ObjectNode postObject = (ObjectNode) mapper.readTree(postJsonString);
+                    ArrayNode employeesLastNamesArray = mapper.createArrayNode();
+                    employeeDataService.getEmployees().stream()
+                            .filter(employee -> employee.getPostID() == post.getId())
+                            .sorted(Comparator.comparing(Employee::getLastName))
+                            .forEach(employee -> employeesLastNamesArray.add(employee.getLastName()));
+                    postObject.set("lastName", employeesLastNamesArray);
+                    System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(postObject));
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 }
