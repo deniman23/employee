@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class PostDataService {
-    private List<Post> posts;
+    private final List<Post> posts;
 
     public PostDataService(List<Post> posts) {
         this.posts = posts;
@@ -45,11 +45,10 @@ public class PostDataService {
         return postToDelete;
     }
 
-    public Optional<Post> addPost(Post post) {
+    public void addPost(Post post) {
         if (posts.stream().anyMatch(p -> p.getId() == post.getId())) {
-            return Optional.empty();
+            return;
         }
         posts.add(post);
-        return Optional.of(post);
     }
 }

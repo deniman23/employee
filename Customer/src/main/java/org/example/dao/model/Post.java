@@ -1,7 +1,7 @@
 package org.example.dao.model;
 
 
-//Должность
+// Должность
 public class Post {
     private final int id;
     private String postName;

@@ -2,7 +2,7 @@ package org.example.dao.model;
 
 import java.time.LocalDate;
 
-//Сотрудника
+// Сотрудника
 public class Employee {
 
     private final int id;
@@ -12,7 +12,6 @@ public class Employee {
     private String firstName;
     private String middleName;
     private int postID;
-    private Post post;
     private boolean isTerminated;
 
     public Employee(int id, String lastName, String firstName, String middleName, int postID) {
@@ -77,14 +76,6 @@ public class Employee {
 
     public void setMiddleName(String middleName) {
         this.middleName = middleName;
-    }
-
-    public Post getPost() {
-        return post;
-    }
-
-    public void setPost(Post post) {
-        this.post = post;
     }
 
     public LocalDate getCreationDate() {

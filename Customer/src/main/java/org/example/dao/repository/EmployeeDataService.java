@@ -54,8 +54,7 @@ public class EmployeeDataService {
         return employeeToDelete;
     }
 
-    public boolean addEmployee(Employee employee) {
+    public void addEmployee(Employee employee) {
         employees.add(employee);
-        return true;
     }
 }

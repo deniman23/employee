@@ -16,12 +16,6 @@ public class JsonMapper {
     public static Scanner scanner = new Scanner(System.in);
     public static final ObjectMapper objectMapper = new ObjectMapper();
 
-
-    static {
-        objectMapper.registerModule(new JavaTimeModule());
-    }
-
-
     public String convertPostToJson(Post post) throws JsonProcessingException {
         if (post == null) {
             return "\"Not found\"";
