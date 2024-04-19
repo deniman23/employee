@@ -4,7 +4,6 @@ import org.example.dao.model.Post;
 import org.example.service.dto.PostDto;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -30,7 +29,7 @@ public class PostDataService {
 
     public List<PostDto> getAllPosts() {
         return findAll().stream()
-                .map(post -> new PostDto(post.getId(), post.getPostName()))
+                .map(PostDto::new)
                 .collect(Collectors.toList());
     }
 
@@ -40,7 +39,7 @@ public class PostDataService {
 
     public Optional<Post> findById(int id) {
         return posts.stream()
-                .filter(p -> Integer.valueOf(p.getId()).equals(id))
+                .filter(p -> p.getId() == id)
                 .findFirst();
     }
 
@@ -67,7 +66,7 @@ public class PostDataService {
     }
 
     public List<Post> findAll() {
-        return new ArrayList<>(posts);
+        return List.copyOf(posts);
     }
 
     public List<PostDto> positionToDto() {
@@ -75,5 +74,4 @@ public class PostDataService {
                 .map(PostDto::new)
                 .collect(Collectors.toList());
     }
-
 }

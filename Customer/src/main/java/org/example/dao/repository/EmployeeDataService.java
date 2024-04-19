@@ -19,9 +19,9 @@ public class EmployeeDataService {
     public EmployeeDataService(List<Employee> employees, PostDataService postDataService) {
         this.employees = employees;
         this.postDataService = postDataService;
-        addEmployee(new Employee(1, "Ivanov", "Ivan", "Ivanovich", 1));
-        addEmployee(new Employee(2, "Alexeev", "Alex", "Alexevich", 2));
-        addEmployee(new Employee(3, "Vitaliev", "Vitaly", "Vitalievich", 3));
+        createEmployee(new Employee(1, "Ivanov", "Ivan", "Ivanovich", 1));
+        createEmployee(new Employee(2, "Alexeev", "Alex", "Alexevich", 2));
+        createEmployee(new Employee(3, "Vitaliev", "Vitaly", "Vitalievich", 3));
     }
 
     public Employee createEmployee(Employee employee) {
@@ -29,7 +29,6 @@ public class EmployeeDataService {
         employees.add(employee);
         return employee;
     }
-
 
     public List<Employee> getEmployees() {
         return employees;
@@ -41,18 +40,12 @@ public class EmployeeDataService {
                 .findFirst();
     }
 
-
     public Optional<Employee> deleteEmployee(int id) {
         Optional<Employee> employeeToDelete = findById(id);
         employeeToDelete.ifPresent(employees::remove);
         return employeeToDelete;
     }
 
-    public void addEmployee(Employee employee) {
-        employees.add(employee);
-    }
-
-    // Вспомогательный метод для получения данных о должности
     public PostDto getPostDto(int postID) {
         return postDataService.findById(postID)
                 .map(PostDto::new)
@@ -61,13 +54,16 @@ public class EmployeeDataService {
 
     public List<EmployeeDto> employeeToDto() {
         return employees.stream()
-                .map(this::convertToEmployeeDto)
+                .map(employee -> {
+                    PostDto postDto = postDataService.findById(employee.getPostID())
+                            .map(PostDto::new)
+                            .orElseThrow(() -> new IllegalStateException("Post not found for ID: " + employee.getPostID()));
+                    return convertToEmployeeDto(employee, postDto);
+                })
                 .collect(Collectors.toList());
     }
 
-    private EmployeeDto convertToEmployeeDto(Employee employee) {
-        PostDto postDto = findPostById(employee.getPostID()).orElse(null);
-
+    private EmployeeDto convertToEmployeeDto(Employee employee, PostDto postDto) {
         return new EmployeeDto(
                 employee.getId(),
                 employee.getCreationDate(),
@@ -79,10 +75,5 @@ public class EmployeeDataService {
                 employee.getPostID(),
                 employee.getTerminated()
         );
-    }
-
-    public Optional<PostDto> findPostById(int postID) {
-        return postDataService.findById(postID)
-                .map(post -> new PostDto(post.getId(), post.getPostName()));
     }
 }

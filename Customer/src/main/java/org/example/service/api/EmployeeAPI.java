@@ -56,7 +56,8 @@ public class EmployeeAPI {
     public List<EmployeeDto> outputAllEmployeesSortedByLastName() {
         List<EmployeeDto> employeeDtos = employeeDataService.employeeToDto();
         return employeeDtos.stream()
-                .filter(employeeDto -> !employeeDto.isTerminated()).sorted(Comparator.comparing(EmployeeDto::getLastName)).collect(Collectors.toList());
+                .filter(employeeDto -> !employeeDto.isTerminated()).sorted(Comparator.comparing(EmployeeDto::getLastName))
+                .collect(Collectors.toList());
     }
 
     // Вывести одного сотрудника по ID
