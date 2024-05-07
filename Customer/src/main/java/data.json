@@ -1,6 +1,0 @@
-//Должности
-{"id": "1", "postName": "engineer"}
-{ "id": "2", "postName": "ceo"}
-//сотрудники
-{"id": "1", "lastName": "Ivanov", "firstName": "Ivan", "middleName": "Ivanovich" ,"postId": 1,"postName":  "engineer", "isTerminated": "false" }
-{"id": "2", "lastName": "Abramof", "firstName": "Abram", "middleName": "Abramovich" ,"postId": 2,"postName":  "ceo", "isTerminated": "false" }
