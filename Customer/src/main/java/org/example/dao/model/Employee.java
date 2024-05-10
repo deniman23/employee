@@ -31,7 +31,7 @@ public class Employee {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "post_id", referencedColumnName = "id")
-    private Post post;
+    public Post post;
 
     @Column(name = "terminated", nullable = false)
     private boolean terminated;

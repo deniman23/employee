@@ -26,30 +26,39 @@ public class EmployeeService {
         this.postServiceDao = postServiceDao;
     }
 
+    private Post getPostById(ResponseEmployee responseEmployee) {
+        return postServiceDao.findById(responseEmployee.getPostID())
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found with ID: " + responseEmployee.getPostID()));
+    }
 
+    private Employee getEmployeeById(ResponseEmployee responseEmployee) {
+        return employeeServiceDao.findEmployeeById(responseEmployee.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + responseEmployee.getId()));
+    }
 
+    private void setPostById(Employee employee, int postId) {
+        employee.post = postServiceDao.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found with ID: " + postId));
+    }
 
     // Создание должности
     public EmployeeDto createEmployee(ResponseEmployee responseEmployee) {
-        Post post = postServiceDao.findById(responseEmployee.getPostID())
-                .orElseThrow(() -> new ResourceNotFoundException("Post not found with ID: " + responseEmployee.getPostID()));
+        Post post = getPostById(responseEmployee);
         Employee employee = new Employee(responseEmployee);
-        employee.setPost(post);
+        setPostById(employee, post.getId());
         employee = employeeServiceDao.saveEmployee(employee);
         return new EmployeeDto(employee);
     }
 
     // Изменение должности
     public EmployeeDto changeEmployee(ResponseEmployee responseEmployee) {
-        Employee employee = employeeServiceDao.findEmployeeById(responseEmployee.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + responseEmployee.getId()));
+        Employee employee = getEmployeeById(responseEmployee);
         employee.setModificationDate(LocalDate.now());
         employee.setLastName(responseEmployee.getLastName());
         employee.setFirstName(responseEmployee.getFirstName());
         employee.setMiddleName(responseEmployee.getMiddleName());
-        Post post = postServiceDao.findById(responseEmployee.getPostID())
-                .orElseThrow(() -> new ResourceNotFoundException("Post not found with ID: " + responseEmployee.getPostID()));
-        employee.setPost(post);
+        Post post = getPostById(responseEmployee);
+        setPostById(employee, post.getId());
         employee = employeeServiceDao.saveEmployee(employee);
         return new EmployeeDto(employee);
     }
