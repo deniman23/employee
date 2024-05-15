@@ -22,7 +22,6 @@ public class JsonMapper {
     }
 
 
-
     public String convertPostToJson(PostDto postDto) throws JsonProcessingException {
         if (postDto == null) {
             return "\"Not found\"";

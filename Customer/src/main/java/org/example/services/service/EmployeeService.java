@@ -71,6 +71,7 @@ public class EmployeeService {
     // Вывести всех сотрудников отсортированных по Фамилии
     public List<EmployeeDto> outputAllEmployeesSortedByLastName() {
         return employeeServiceDao.findAllEmployeesSortedByLastName().stream()
+                .filter(employee -> !employee.getTerminated())
                 .map(EmployeeDto::new)
                 .collect(Collectors.toList());
     }

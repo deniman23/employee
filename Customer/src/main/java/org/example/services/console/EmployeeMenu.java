@@ -12,7 +12,7 @@ import static org.example.services.mapper.JsonMapper.scanner;
 @Component
 public class EmployeeMenu {
     private EmployeeConsoleService employeeConsoleService;
-    private PostMenu postMenu;
+    private final PostMenu postMenu;
 
     @Autowired
     public EmployeeMenu(PostMenu postMenu) {
@@ -24,13 +24,6 @@ public class EmployeeMenu {
         this.employeeConsoleService = employeeConsoleService;
     }
 
-    public void setPostMenu(PostMenu postMenu) {
-        this.postMenu = postMenu;
-    }
-
-    public void setEmployeeAPI(EmployeeConsoleService employeeConsoleService) {
-        this.employeeConsoleService = employeeConsoleService;
-    }
 
     public void menuEmployee() {
         boolean isRunning = true;

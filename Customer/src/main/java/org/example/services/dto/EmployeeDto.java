@@ -20,7 +20,6 @@ public class EmployeeDto {
     private final boolean isTerminated;
 
 
-
     public EmployeeDto(Employee employee) {
         this.id = employee.getId();
         this.creationDate = employee.getCreationDate();
@@ -36,7 +35,10 @@ public class EmployeeDto {
     public String getPostName() {
         return postName;
     }
-    public void setPostName(String postName) {this.postName = postName;}
+
+    public void setPostName(String postName) {
+        this.postName = postName;
+    }
 
     public PostDto getPost() {
         return post;

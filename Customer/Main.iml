@@ -6,13 +6,10 @@
         <setting name="validation-enabled" value="true" />
         <setting name="provider-name" value="Hibernate" />
         <datasource-mapping>
-          <factory-entry name="entityManagerFactory" value="c3694f81-dd6a-414b-94c7-3b85c25035c6" />
+          <factory-entry name="entityManagerFactory" value="aba3d94f-9310-4f15-8865-31925e9cc333" />
         </datasource-mapping>
         <naming-strategy-map />
       </configuration>
-    </facet>
-    <facet type="Spring" name="Spring">
-      <configuration />
     </facet>
   </component>
 </module>

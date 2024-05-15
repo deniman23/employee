@@ -4,7 +4,6 @@ import org.example.services.service.EmployeeService;
 import org.example.services.dto.EmployeeDto;
 import org.example.services.mapper.JsonMapper;
 import org.example.services.response.ResponseEmployee;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +17,7 @@ import static org.example.services.mapper.JsonMapper.scanner;
 public class EmployeeConsoleService {
     private final EmployeeService employeeService;
     private final JsonMapper jsonMapper;
-    private EmployeeMenu employeeMenu;
+    private final EmployeeMenu employeeMenu;
 
     public EmployeeConsoleService(EmployeeService employeeService, JsonMapper jsonMapper, @Lazy EmployeeMenu employeeMenu) {
         this.employeeService = employeeService;
@@ -185,9 +184,5 @@ public class EmployeeConsoleService {
         String search = scanner.nextLine();
         List<EmployeeDto> employeeDtos = employeeService.searchEmployeesByPartialMatch(search);
         printEmployeeDtos(employeeDtos);
-    }
-
-    public void setEmployeeMenu(EmployeeMenu employeeMenu) {
-        this.employeeMenu = employeeMenu;
     }
 }
