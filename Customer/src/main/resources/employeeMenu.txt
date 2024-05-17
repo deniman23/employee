@@ -1,0 +1,13 @@
+-------------------------------------------------
+                   Employee Menu
+-------------------------------------------------
+ Choose an action:
+ 0. Go to post menu
+ 1. Create employee
+ 2. Change employee
+ 3. Terminate employee
+ 4. Output all sorted employees
+ 5. Output one employee
+ 6. Output filtered employees
+ 8. Exit
+-------------------------------------------------
